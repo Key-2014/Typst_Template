@@ -13,13 +13,10 @@
 // 3. プロジェクトの基本テンプレート関数
 #let project(
   title: "",
-  // デフォルトであなたの情報を設定
-  author: [
-    学生番号: 23311420 \
-    氏名: 大沼 景
-  ],
+  author: "",      // 名前（文字列またはContent）
+  student-id: "",  // 学生番号（文字列）
   date: none,
-  textbook-numbering: false, // 教科書風の数式番号にするかどうかのフラグ
+  textbook-numbering: false,
   body
 ) = {
   // --- Page & Text Settings ---
@@ -63,14 +60,24 @@
   show figure.where(kind: table): set figure.caption(position: top)
 
   // --- Title & Author Block ---
-  // タイトル部分の描画（typ-title, typ-nameの内容）
+  
+  // タイトルの描画
   if title != "" {
     align(center, text(17pt, weight: "bold")[#title])
     v(1em)
   }
   
-  if author != none {
-    align(right, author)
+  // 氏名・学生番号の描画
+  // どちらか一方でも入力があればブロックを表示
+  if author != "" or student-id != "" {
+    align(right)[
+      #if student-id != "" {
+        [学生番号: #student-id \ ]
+      }
+      #if author != "" {
+        [氏名: #author]
+      }
+    ]
     v(2em)
   }
 
