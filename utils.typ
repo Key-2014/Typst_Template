@@ -15,7 +15,7 @@
 #let crect(body) = align(center, block(
   stroke: 1pt,
   inset: 10pt,
-  radius: 4pt,
+  radius: 0pt,
   align(left, body)
 ))
 
@@ -24,7 +24,7 @@
   width: 100%,
   stroke: 1pt,
   inset: 10pt,
-  radius: 4pt,
+  radius: 0pt,
   align(left, body)
 )
 
@@ -33,6 +33,6 @@
   stroke: 1pt,
   inset: (x: 5pt, y: 5pt),
   outset: (y: 3pt),
-  radius: 2pt,
+  radius: 0pt,
   $#body$
 )

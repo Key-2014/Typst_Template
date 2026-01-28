@@ -1,7 +1,7 @@
 // lib.typ
 
 // 1. パッケージの一括インポート
-#import "@preview/physica:0.9.7": *
+#import "@preview/physica:0.9.8": *
 #import "@preview/unify:0.7.1": num, qty
 #import "@preview/cetz:0.4.2"
 #import "@preview/showybox:2.0.4": showybox
@@ -15,8 +15,6 @@
   title: "",
   author: "",      // 名前（文字列またはContent）
   student-id: "",  // 学生番号（文字列）
-  date: none,
-  textbook-numbering: false,
   body
 ) = {
   // --- Page & Text Settings ---
@@ -45,16 +43,6 @@
   
   // Inline fractions horizontal
   show math.equation.where(block: false): set math.frac(style: "horizontal")
-
-  // Equation Numbering Logic
-  if textbook-numbering {
-     set math.equation(numbering: (..nums) => "(6.5." + numbering("1", ..nums) + ")", supplement: [式])
-  } else {
-     set math.equation(numbering: "(1)", supplement: [式])
-  }
-  
-  // Heading Numbering
-  set heading(numbering: "1.1.1.")
 
   // --- Figure Settings ---
   show figure.where(kind: table): set figure.caption(position: top)
