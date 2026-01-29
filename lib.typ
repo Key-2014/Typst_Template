@@ -3,7 +3,7 @@
 // 1. パッケージの一括インポート
 #import "@preview/physica:0.9.7": *
 #import "@preview/unify:0.7.1": num, qty
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.4.2": canvas, draw, vector, matrix
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/whalogen:0.3.0": ce
 
@@ -17,6 +17,7 @@
   student-id: "",  // 学生番号（文字列）
   date: none,
   textbook-numbering: false,
+  indent: true,
   body
 ) = {
   // --- Page & Text Settings ---
@@ -27,8 +28,9 @@
   
   set par(
     justify: true,
-    first-line-indent: 1em,
-    leading: 0.8em
+    first-line-indent: if indent { 1em } else { 0em },
+    leading: 0.8em,
+    indent-all: indent,
   )
 
   set text(
@@ -69,14 +71,11 @@
   
   // 氏名・学生番号の描画
   // どちらか一方でも入力があればブロックを表示
-  if author != "" or student-id != "" {
+  if author != "" or student-id != "" or date != none {
     align(right)[
-      #if student-id != "" {
-        [学生番号: #student-id \ ]
-      }
-      #if author != "" {
-        [氏名: #author]
-      }
+      #if student-id != "" [学生番号: #student-id \ ]
+      #if author != "" [氏名: #author \ ]
+      #if date != none [#date] // 日付を表示する処理を追加
     ]
     v(2em)
   }
