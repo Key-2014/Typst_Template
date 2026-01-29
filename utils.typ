@@ -61,3 +61,8 @@
   // 3. Output with a thin space (1/6 em)
   $#h(0.16667em) #content$
 }
+
+// Manually tag a specific equation without affecting the global equation counter
+#let eqtag(content, tag) = {
+  math.equation(content, block: true, numbering: _ => "(" + tag + ")")
+}

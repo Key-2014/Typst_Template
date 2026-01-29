@@ -1,26 +1,28 @@
 // lib.typ
 
-// 1. パッケージの一括インポート
+// --- Packages ---
 #import "@preview/physica:0.9.7": *
 #import "@preview/unify:0.7.1": num, qty
 #import "@preview/cetz:0.4.2": canvas, draw, vector, matrix
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/whalogen:0.3.0": ce
 
-// 2. 自作マクロの読み込み
+// --- User-defined Macros ---
 #import "utils.typ": *
 
-// 3. プロジェクトの基本テンプレート関数
+// --- Main Template ---
 #let project(
   title: "",
-  author: "",      // 名前（文字列またはContent）
-  student-id: "",  // 学生番号（文字列）
+  author: "",
+  student-id: "",
   date: none,
   textbook-numbering: false,
   indent: true,
+  heading-numbering: none,
+  heading-supplement: none,
   body
 ) = {
-  // --- Page & Text Settings ---
+  // --- Layout & Document Properties ---
   set page(
     paper: "us-letter",
     numbering: "1",
@@ -41,47 +43,68 @@
     lang: "ja"
   )
 
-  // --- Math Settings ---
+  // --- Typography Rules ---
+  // Ensure math font consistency
   show math.equation: set text(
     font: ("New Computer Modern Math", "Harano Aji Mincho"),
     size: 11pt
   )
   
-  // Inline fractions horizontal
+  // Use horizontal style for inline fractions
   show math.equation.where(block: false): set math.frac(style: "horizontal")
 
-  // Equation Numbering Logic
-  if textbook-numbering {
-     set math.equation(numbering: (..nums) => "(6.5." + numbering("1", ..nums) + ")", supplement: [式])
+  // --- Heading Configuration ---
+  set heading(
+    numbering: heading-numbering,
+    supplement: heading-supplement
+  )
+
+  // Add vertical spacing around headings
+  show heading: it => {
+    v(0.5em)
+    it
+    v(0.5em)
+  }
+
+  // --- Equation Numbering Logic ---
+  // If headings are numbered, equations follow section numbering (e.g., 1.1.1)
+  if heading-numbering != none {
+    set math.equation(
+      numbering: (..nums) => {
+        let h-counter = counter(heading).get()
+        if h-counter.len() > 0 {
+          "(" + h-counter.map(str).join(".") + "." + numbering("1", ..nums) + ")"
+        } else {
+          "(" + numbering("1", ..nums) + ")"
+        }
+      },
+      supplement: [式]
+    )
   } else {
-     set math.equation(numbering: "(1)", supplement: [式])
+    // Standard sequence (1)
+    set math.equation(numbering: "(1)", supplement: [式])
   }
   
-  // Heading Numbering
-  set heading(numbering: "1.1.1.")
+  // --- Tables & Figures ---
+  set figure(supplement: [図])
+  show figure.where(kind: table): set figure(supplement: [表])
+  show figure.where(kind: table): set figure.caption(position: top) //
 
-  // --- Figure Settings ---
-  show figure.where(kind: table): set figure.caption(position: top)
-
-  // --- Title & Author Block ---
-  
-  // タイトルの描画
+  // --- Title & Metadata Block ---
   if title != "" {
     align(center, text(17pt, weight: "bold")[#title])
     v(1em)
   }
   
-  // 氏名・学生番号の描画
-  // どちらか一方でも入力があればブロックを表示
   if author != "" or student-id != "" or date != none {
     align(right)[
       #if student-id != "" [学生番号: #student-id \ ]
       #if author != "" [氏名: #author \ ]
-      #if date != none [#date] // 日付を表示する処理を追加
+      #if date != none [#date]
     ]
     v(2em)
   }
 
-  // 本文の描画
+  // --- Main Content ---
   body
 }
