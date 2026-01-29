@@ -15,7 +15,7 @@
 #let crect(body) = align(center, block(
   stroke: 1pt,
   inset: 10pt,
-  radius: 0pt,
+  radius: 4pt,
   align(left, body)
 ))
 
@@ -24,7 +24,7 @@
   width: 100%,
   stroke: 1pt,
   inset: 10pt,
-  radius: 0pt,
+  radius: 4pt,
   align(left, body)
 )
 
@@ -33,6 +33,31 @@
   stroke: 1pt,
   inset: (x: 5pt, y: 5pt),
   outset: (y: 3pt),
-  radius: 0pt,
+  radius: 2pt,
   $#body$
 )
+
+// unit
+#let u(unit, b: false) = {
+  // 1. Construct the unit part (body)
+  let body = if type(unit) == str {
+    if unit.contains("^") {
+      let parts = unit.split("^")
+      let base = parts.at(0)
+      let exponent = parts.at(1)
+      // Combine as a string and render in math mode with upright style
+      $upright(#base)^#exponent$
+    } else {
+      $upright(#unit)$
+    }
+  } else {
+    // Apply upright style if the input is content (e.g., $mu$)
+    $upright(#unit)$
+  }
+
+  // 2. Handle brackets [ ]
+  let content = if b { $[#body]$ } else { body }
+
+  // 3. Output with a thin space (1/6 em)
+  $#h(0.16667em) #content$
+}
