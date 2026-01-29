@@ -28,7 +28,10 @@
   
   set par(
     justify: true,
-    indent: if indent { 1em } else { 0em },
+    first-line-indent: (
+      amount: if indent { 1em } else { 0em },
+      all: indent
+    ),
     leading: 0.8em,
   )
 
