@@ -27,6 +27,14 @@ git submodule add <URL_TO_THIS_REPO> lib/my-templates
 
 *Note: Replace `<URL_TO_THIS_REPO>` with the actual Git URL of this repository.*
 
+### Updating the Submodule
+
+To fetch and apply the latest updates from this template repository to your project, run:
+
+```bash
+git submodule update --remote lib/my-templates
+```
+
 ## Usage
 
 In your main Typst file (e.g., `main.typ`), import the library and apply the `project` function.
