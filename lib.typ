@@ -1,9 +1,9 @@
 // lib.typ
 
 // --- Packages ---
-#import "@preview/physica:0.9.7": *
-#import "@preview/unify:0.7.1": num, qty
-#import "@preview/cetz:0.4.2": canvas, draw, vector, matrix
+#import "@preview/physica:0.9.8": *
+#import "@preview/unify:0.8.0": num, qty
+#import "@preview/cetz:0.5.0": canvas, draw, matrix, vector
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/whalogen:0.3.0": ce
 
@@ -17,22 +17,22 @@
   student-id: "",
   date: none,
   textbook-numbering: false,
-  indent: true,
+  indent: false,
   heading-numbering: none,
   heading-supplement: none,
-  body
+  body,
 ) = {
   // --- Layout & Document Properties ---
   set page(
     paper: "us-letter",
     numbering: "1",
   )
-  
+
   set par(
     justify: true,
     first-line-indent: (
       amount: if indent { 1em } else { 0em },
-      all: indent
+      all: indent,
     ),
     leading: 0.8em,
   )
@@ -40,23 +40,23 @@
   set text(
     font: ("Harano Aji Mincho", "New Computer Modern Math"),
     size: 11pt,
-    lang: "ja"
+    lang: "ja",
   )
 
   // --- Typography Rules ---
   // Ensure math font consistency
   show math.equation: set text(
     font: ("New Computer Modern Math", "Harano Aji Mincho"),
-    size: 11pt
+    size: 11pt,
   )
-  
+
   // Use horizontal style for inline fractions
   show math.equation.where(block: false): set math.frac(style: "horizontal")
 
   // --- Heading Configuration ---
   set heading(
     numbering: heading-numbering,
-    supplement: heading-supplement
+    supplement: heading-supplement,
   )
 
   // Add vertical spacing around headings
@@ -78,13 +78,13 @@
           "(" + numbering("1", ..nums) + ")"
         }
       },
-      supplement: [式]
+      supplement: [式],
     )
   } else {
     // Standard sequence (1)
     set math.equation(numbering: "(1)", supplement: [式])
   }
-  
+
   // --- Tables & Figures ---
   set figure(supplement: [図])
   show figure.where(kind: table): set figure(supplement: [表])
@@ -95,7 +95,7 @@
     align(center, text(17pt, weight: "bold")[#title])
     v(1em)
   }
-  
+
   if author != "" or student-id != "" or date != none {
     align(right)[
       #if student-id != "" [学生番号: #student-id \ ]
