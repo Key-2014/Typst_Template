@@ -121,7 +121,37 @@ Provides notation commonly used in Japanese mathematics education (subscripts on
 - **`#eqtag(content, tag)`**: Manually tags a specific equation (e.g., `*` or `A`) without advancing the global equation counter.
 - **`#bk`**: Inserts a horizontal space of 1em.
 - **`#qed`**: Places a Q.E.D. symbol flush right at the end of a line.
-- **`#lhs` / `#rhs`**: Outputs the Japanese text `(左辺)` (Left-hand side) / `(右辺)` (Right-hand side).
+- **`#lhs`**: Outputs the Japanese text `(左辺)` (Left-hand side).
+- **`#rhs`**: Outputs the Japanese text `(右辺)` (Right-hand side).
+
+---
+
+## VS Code Snippets
+
+This template includes a `.vscode/typst.code-snippets` file that provides highly optimized auto-completion snippets for writing academic reports efficiently. These workspace snippets are automatically active when you open the template directory in VS Code.
+
+To use them, simply type `typ-` in a `.typ` file and select from the suggestions:
+
+### Template Initialization
+- **`typ-report`**: Initializes a new report document with the custom template (sets up title page, fonts, and numbering).
+
+### Content Blocks
+- **`typ-png`**: Inserts a figure containing an image with optional caption and label.
+- **`typ-table`**: Inserts a table wrapped in a figure.
+- **`typ-code`**: Inserts a source code block with syntax highlighting and caption.
+- **`typ-cetz`**: Inserts a CeTZ drawing canvas with a helper grid.
+
+### Macros from `utils.typ`
+- **`typ-frect`**: Inserts a full-width framed rectangle block (`#frect[...]`). Ideal for theorems and definitions.
+- **`typ-crect`**: Inserts a centered framed rectangle block (`#crect[...]`). Ideal for emphasizing results.
+- **`typ-ans`**: Inserts an answer box (`#ans[...]`).
+- **`typ-u`**: Formats physical units (`#u("m/s^2")`).
+
+### Equation Numbering Control
+- **`typ-eqnum`**: Enables standard equation numbering `(1)`.
+- **`typ-eq-manual`** (or **`typ-eq-prefix`**): Manually sets the equation numbering prefix (e.g., to `(6.5.1)` or `(1.1.1)`) and optionally resets the counter.
+- **`typ-eqtag`**: Tags a single equation manually using `eqtag()` without affecting the global counter.
+- **`typ-eq-none`** (or **`typ-eqdelete`**): Disables equation numbering from that point forward.
 
 ---
 

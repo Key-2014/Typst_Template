@@ -6,6 +6,7 @@
 #import "@preview/cetz:0.5.2": canvas, draw, matrix, vector
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/whalogen:0.3.0": ce
+// #import "@preview/lilaq:0.5.0" as lq
 
 // --- User-defined Macros ---
 #import "utils.typ": *
