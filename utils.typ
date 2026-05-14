@@ -1,5 +1,8 @@
 // utils.typ
 
+// --- Packages ---
+#import "@preview/unify:0.8.0": qty
+
 // --- Utils ---
 #let bk = h(1em)
 #let qed = h(1fr) + $qed$
@@ -9,6 +12,7 @@
 // --- Math Notations ---
 #let combination(n, r) = math.attach(math.upright("C"), bl: n, br: r)
 #let permutation(n, r) = math.attach(math.upright("P"), bl: n, br: r)
+#let hcombination(n, r) = math.attach(math.upright("H"), bl: n, br: r)
 
 // --- Boxes ---
 // Centered rectangle
@@ -16,6 +20,8 @@
   stroke: 1pt,
   inset: 10pt,
   radius: 4pt,
+  above: 1.2em,
+  below: 1.2em,
   align(left, body)
 ))
 
@@ -25,6 +31,8 @@
   stroke: 1pt,
   inset: 10pt,
   radius: 4pt,
+  above: 1.2em,
+  below: 1.2em,
   align(left, body)
 )
 
@@ -34,26 +42,15 @@
   inset: (x: 5pt, y: 5pt),
   outset: (y: 3pt),
   radius: 2pt,
-  $#body$
+  baseline: 20%,
+  if type(body) == str { body } else { $#body$ }
 )
 
-// unit
+// Unit formatter
 #let u(unit, b: false) = {
-  // 1. Construct the unit part (body)
-  let body = if type(unit) == str {
-    if unit.contains("^") {
-      let parts = unit.split("^")
-      let base = parts.at(0)
-      let exponent = parts.at(1)
-      // Combine as a string and render in math mode with upright style
-      $upright(#base)^#exponent$
-    } else {
-      $upright(#unit)$
-    }
-  } else {
-    // Apply upright style if the input is content (e.g., $mu$)
-    $upright(#unit)$
-  }
+  // Parse and format complex units using qty from the unify package
+  // Leave the first argument (amount) empty to extract only the unit part
+  let body = qty("", unit)
 
   // 2. Handle brackets [ ]
   let content = if b { $[#body]$ } else { body }
