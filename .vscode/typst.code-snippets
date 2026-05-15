@@ -5,7 +5,7 @@
       "typ-template"
     ],
     "body": [
-      "#import \"../Typst_Template/lib.typ\": *",
+      "#import \"../lib/Typst_Template/lib.typ\": *",
       "#show: project.with(",
       "  title: \"${1:title}\",",
       "  author: \"\",",
@@ -26,7 +26,10 @@
     "description": "Enable standard equation numbering, e.g., (1), (2)."
   },
   "Typst_equation_manual_override": {
-    "prefix": ["typ-eq-manual", "typ-eq-prefix"],
+    "prefix": [
+      "typ-eq-manual",
+      "typ-eq-prefix"
+    ],
     "body": [
       "#set math.equation(numbering: \"(${1:6.5}.1)\")",
       "// #counter(math.equation).update(${2:0}) // Uncomment to reset counter",
