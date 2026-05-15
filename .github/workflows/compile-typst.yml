@@ -28,11 +28,8 @@ jobs:
           mkdir -p .fonts
           cd .fonts
           # Download Harano Aji Mincho (Regular and Bold)
-          wget -q https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Regular.otf
-          wget -q https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Bold.otf
-          # Download New Computer Modern Math (for safety, though Typst 0.11 bundles it, it's good practice if using an older version or custom paths)
-          wget -q https://github.com/GUST-TeX/NewComputerModern/raw/master/otf/NewCMMath-Regular.otf
-          wget -q https://github.com/GUST-TeX/NewComputerModern/raw/master/otf/NewCM10-Regular.otf
+          wget -q https://raw.githubusercontent.com/trueroad/HaranoAjiFonts/master/HaranoAjiMincho-Regular.otf
+          wget -q https://raw.githubusercontent.com/trueroad/HaranoAjiFonts/master/HaranoAjiMincho-Bold.otf
 
       - name: Compile Typst
         run: |
