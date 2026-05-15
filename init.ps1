@@ -46,7 +46,7 @@ if (-not (Test-Path $DestGitignore)) {
 } else {
     $Content = Get-Content $DestGitignore -Raw
     if ($Content -notmatch "\*\.pdf") {
-        Add-Content -Path $DestGitignore -Value "`n# Typst PDF exclusions`n*.pdf`n!example/*.pdf"
+        Add-Content -Path $DestGitignore -Value "`n# Typst PDF exclusions`n*.pdf"
         Write-Host "[OK] Appended PDF exclusion rules to existing .gitignore." -ForegroundColor Green
     } else {
         Write-Host "[OK] .gitignore already contains PDF exclusion rules. Skipped." -ForegroundColor DarkGreen
