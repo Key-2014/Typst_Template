@@ -3,21 +3,33 @@
   title: "title",
   author: "",
   student-id: "",
-  date: auto,
+  heading-numbering: "1.1.1.",
+  equation-numbering: "1.1",
 )
 
+= first<fir>
+#lorem(30)
 
+$
+  x^2 + y^2 = z^2
+$
 
-#set math.equation(numbering: n => "(6.5." + str(n) + ")", supplement: [式])
-#counter(math.equation).update(0) // The next equation will be number 0 + 1
+@fir
+== first-bash
 
-#set math.equation(numbering: "(1)", number-align: bottom, supplement: [式])
+#lorem(30)
 
-#set math.equation(numbering: none)
+$
+  F = m a
+$
 
-#set math.equation(
-  numbering: (..nums) => "(1.1." + numbering("1", ..nums) + ")",
-  number-align: bottom,
-  supplement: [式],
-)
-// #counter(math.equation).update(0)
+= second
+#lorem(30)
+
+$
+  L = K + U
+$
+
+$
+  y - a x^2
+$

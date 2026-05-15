@@ -20,6 +20,7 @@
   indent: false,
   heading-numbering: none,
   heading-supplement: none,
+  equation-numbering: none,
   title-page: false,
   toc: false,
   body,
@@ -76,22 +77,40 @@
   }
 
   // --- Equation Numbering Logic ---
-  // If headings are numbered, equations follow section numbering (e.g., 1.1.1)
-  set math.equation(
-    numbering: if heading-numbering != none {
-      (..numbers) => {
-        let h-counter = counter(heading).get()
-        if h-counter.len() > 0 {
-          "(" + h-counter.map(str).join(".") + "." + numbering("1", ..numbers) + ")"
+  // Determine actual equation numbering style based on user choice and heading setting
+  let actual-eq-numbering = if equation-numbering == "1.1" {
+    if heading-numbering != none {
+      "1.1"
+    } else {
+      "1"
+    }
+  } else {
+    equation-numbering
+  }
+
+  if actual-eq-numbering == "1.1" {
+    // Reset equation counter at every level 1 heading
+    show heading.where(level: 1): it => {
+      counter(math.equation).update(0)
+      it
+    }
+    set math.equation(
+      numbering: (..numbers) => {
+        let h = counter(heading).at(here())
+        if h.len() > 0 {
+          "(" + str(h.at(0)) + "." + numbering("1", ..numbers) + ")"
         } else {
           "(" + numbering("1", ..numbers) + ")"
         }
-      }
-    } else {
-      "(1)"
-    },
-    supplement: [式],
-  )
+      },
+      supplement: [式],
+    )
+  } else if actual-eq-numbering != none {
+    set math.equation(
+      numbering: actual-eq-numbering,
+      supplement: [式],
+    )
+  }
 
   // --- Tables & Figures ---
   set figure(supplement: [図])
