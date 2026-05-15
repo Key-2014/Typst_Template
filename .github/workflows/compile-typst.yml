@@ -1,0 +1,64 @@
+name: Compile Typst to PDF and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.typ'
+      - '.github/workflows/**'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating releases
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Fetch submodules (like Typst_Template)
+
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v3
+
+      - name: Download Harano Aji Fonts
+        run: |
+          mkdir -p .fonts
+          cd .fonts
+          # Download Harano Aji Mincho (Regular and Bold)
+          wget -q https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Regular.otf
+          wget -q https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Bold.otf
+          # Download New Computer Modern Math (for safety, though Typst 0.11 bundles it, it's good practice if using an older version or custom paths)
+          wget -q https://github.com/GUST-TeX/NewComputerModern/raw/master/otf/NewCMMath-Regular.otf
+          wget -q https://github.com/GUST-TeX/NewComputerModern/raw/master/otf/NewCM10-Regular.otf
+
+      - name: Compile Typst
+        run: |
+          # The --font-path flag points Typst to our downloaded fonts
+          # Automatically compile all .typ files in the root directory
+          # To exclude specific files, add them to the case statement below (like .gitignore)
+          for file in *.typ; do
+            case "$file" in
+              lib.typ|utils.typ|*.template.typ)
+                echo "Skipping ignored file: $file"
+                continue
+                ;;
+            esac
+            
+            if [ -f "$file" ]; then
+              echo "Compiling $file..."
+              typst compile --font-path .fonts/ "$file" "${file%.typ}.pdf"
+            fi
+          done
+
+      - name: Create Release and Upload PDF
+        uses: softprops/action-gh-release@v2
+        if: hashFiles('*.pdf') != '' # Only create a release if at least one PDF was generated
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Auto-generated Report (Build ${{ github.run_number }})
+          body: "Automated PDF build triggered by commit ${{ github.sha }}"
+          files: "*.pdf"
+          fail_on_unmatched_files: false

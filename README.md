@@ -25,13 +25,22 @@ If you do not have this font installed on your local environment, please downloa
 
 ## Installation
 
-To use this template in your Typst project, add it as a Git submodule.
-Run the following command in your project's root directory:
+To use this template in your Typst project, add it as a Git submodule and run the initialization script to automatically configure your environment.
+Run the following commands in your project's root directory (assuming Windows PowerShell):
 
-```bash
+```powershell
+# 1. Add the submodule
 mkdir -p lib
 git submodule add <URL_TO_THIS_REPO> lib/Typst_Template
+
+# 2. Run the automatic setup script
+powershell -ExecutionPolicy Bypass -File .\lib\Typst_Template\init.ps1
 ```
+
+> **What does `init.ps1` do?**
+> - **CI/CD**: Copies the GitHub Actions workflow to automatically build and release PDFs on push.
+> - **Snippets**: Copies the highly optimized `.vscode/typst.code-snippets` to your workspace so they are instantly available.
+> - **.gitignore**: Safely appends `*.pdf` to your `.gitignore` to prevent generated PDFs from bloating your repository.
 
 > **Updating the Submodule**:
 > To fetch and apply the latest changes from the template repository, run:
@@ -184,6 +193,24 @@ Run the following command in the template directory:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\update_packages.ps1
 ```
+
+---
+
+## Automated PDF Generation (GitHub Actions CI/CD)
+
+This template provides a ready-to-use GitHub Actions workflow (`.github/workflows/compile-typst.yml`) that automatically compiles your Typst source code into a PDF and publishes it to GitHub Releases every time you push to the `main` branch. 
+
+**This workflow automatically downloads the required "Harano Aji Mincho" fonts to the cloud server before compilation, ensuring perfect reproducibility without bloating your Git repository with heavy font files.**
+
+### How to use in your report repository:
+
+Because GitHub Actions only run workflows located in the root directory of a repository, the workflow must be copied to your parent repository.
+
+**The easiest way to set this up is to run the `init.ps1` script during installation** (see the Installation section). This script will automatically copy the workflow file into your parent repository's `.github/workflows/` directory.
+
+Once configured, GitHub will automatically discover any `.typ` files in your parent repository's root directory, build them, and publish a new PDF Release on every push!
+
+---
 
 ## License
 MIT License
