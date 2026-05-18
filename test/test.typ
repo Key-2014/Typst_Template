@@ -1,4 +1,4 @@
-#import "../lib.typ": *
+#import "/lib.typ": *
 #show: project.with(
   title: "title",
   author: "",
@@ -6,6 +6,8 @@
   heading-numbering: none,
   equation-numbering: none,
 )
+
+
 
 = first<fir>
 #lorem(30)

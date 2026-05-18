@@ -7,7 +7,8 @@
   author: "Typst 太郎",
   student-id: "12345678",
   date: datetime.today().display(),
-  heading-numbering: "1.1", // 章番号を有効化（数式番号も連動します）
+  heading-numbering: "1.1",
+  equation-numbering: "1.1",
   title-page: true, // 独立した表紙を生成
   toc: true, // 目次を生成
 )

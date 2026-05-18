@@ -10,7 +10,8 @@
       "  title: \"${1:title}\",",
       "  author: \"\",",
       "  student-id: \"\",",
-      "  date: auto,",
+      "  heading-numbering: none,",
+      "  equation-numbering: none,",
       ")",
       "",
       "$0"

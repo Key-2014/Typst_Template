@@ -66,9 +66,10 @@ Alternatively, in your project's main file (e.g., `main.typ`), initialize the do
   author: "Typst User",
   student-id: "12345678",
   date: datetime.today().display(),
-  heading-numbering: "1.1", // Optional: Enable section numbering
-  title-page: true,         // Optional: Generate a standalone title page
-  toc: true,                // Optional: Generate a table of contents
+  heading-numbering: "1.1",  // Optional: Enable section numbering
+  equation-numbering: "1.1", // Optional: Enable equation numbering ("1" or "1.1")
+  title-page: true,          // Optional: Generate a standalone title page
+  toc: true,                 // Optional: Generate a table of contents
 )
 
 = Introduction
@@ -97,11 +98,15 @@ The `project` function accepts the following arguments:
 | `indent` | `boolean` | `false` | If `true`, the first line of each paragraph is indented by 1em. |
 | `heading-numbering` | `string` / `none` | `none` | Heading numbering style (e.g., `"1.1"`). |
 | `heading-supplement` | `content` / `none`| `none` | Heading prefix (e.g., `[Chapter]`). |
+| `equation-numbering` | `string` / `none` | `none` | Equation numbering style (`"1"` for continuous, `"1.1"` for section-based, or `none`). |
 | `title-page` | `boolean` | `false` | If `true`, generates a dedicated, vertically-centered title page without a page number. The page counter is reset to 1 for the following content. |
 | `toc` | `boolean` | `false` | If `true`, generates a Table of Contents (目次) before the main content. |
 
-> **💡 Automatic Equation Numbering**
-> If `heading-numbering` is set (e.g., to `"1.1"`), equation numbering will automatically follow the section numbers, resulting in formats like `(1.1)` or `(2.1.3)`. If left unset, equations will be numbered sequentially as `(1), (2), ...`.
+> **💡 Equation Numbering**
+> Equation numbering is controlled by the `equation-numbering` parameter:
+> - `none` (default): Equations are not numbered.
+> - `"1"`: Continuous numbering like `(1)`, `(2)`, ... throughout the document.
+> - `"1.1"`: Section-based numbering like `(1.1)`, `(2.1)`, ... which resets at each major section heading. (Note: If `heading-numbering` is `none`, it will automatically fall back to continuous numbering `"1"`).
 
 ---
 
