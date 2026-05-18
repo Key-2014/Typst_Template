@@ -62,6 +62,9 @@
   // Use horizontal style for inline fractions
   show math.equation.where(block: false): set math.frac(style: "horizontal")
 
+  // Allow block equations to break across pages
+  show math.equation.where(block: true): set block(breakable: true)
+
   // --- Heading Configuration ---
   set heading(
     numbering: heading-numbering,
