@@ -3,21 +3,48 @@
   title: "title",
   author: "",
   student-id: "",
-  date: auto,
+  heading-numbering: none,
+  equation-numbering: none,
 )
 
+= first<fir>
+#lorem(30)
+
+$
+  x^2 + y^2 = z^2
+$
+
+== first-bash
+
+#lorem(30)
+#set math.equation(numbering: (..nums) => "(" + "1." + numbering("1", ..nums) + ")")
+#counter(math.equation).update(0)
 
 
-#set math.equation(numbering: n => "(6.5." + str(n) + ")", supplement: [式])
-#counter(math.equation).update(0) // The next equation will be number 0 + 1
 
-#set math.equation(numbering: "(1)", number-align: bottom, supplement: [式])
+$
+  F = m a
+$
 
-#set math.equation(numbering: none)
+= second
+#lorem(30)
 
-#set math.equation(
-  numbering: (..nums) => "(1.1." + numbering("1", ..nums) + ")",
-  number-align: bottom,
-  supplement: [式],
-)
-// #counter(math.equation).update(0)
+#set math.equation(numbering: (..nums) => "(" + "6.5." + numbering("1", ..nums) + ")")
+//#counter(math.equation).update(0)
+
+$
+  L = K + U
+$
+
+$
+  y - a x^2
+$
+
+
+#figure(
+  ```python
+  import numpy
+  x = y + z
+  ```,
+  // caption: [Source code description]
+) <label>

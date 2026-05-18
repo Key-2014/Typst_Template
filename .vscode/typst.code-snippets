@@ -31,18 +31,17 @@
       "typ-eq-prefix"
     ],
     "body": [
-      "#set math.equation(numbering: \"(${1:6.5}.1)\")",
-      "// #counter(math.equation).update(${2:0}) // Uncomment to reset counter",
+      "#set math.equation(numbering: (..nums) => \"(\" + \"${1:6.5}.\" + numbering(\"1\", ..nums) + \")\")",
+      "//#counter(math.equation).update(${2:0})",
       "$0"
     ],
-    "description": "Set a custom equation numbering prefix (e.g., 6.5.1) and optionally reset the counter. Useful for textbook summaries."
+    "description": "Set a custom equation numbering prefix (e.g., 6.5.1) and reset the counter. Useful for textbook summaries."
   },
   "Typst_cetz_template": {
     "prefix": "typ-cetz",
     "body": [
-      "#cetz.canvas({",
-      "  import cetz.draw: *",
-      "  // import cetz.plot",
+      "#canvas({",
+      "  import draw: *",
       "  ",
       "  // Grid setup",
       "  grid((0,0), ($1, $2), step: 1, stroke: gray + 0.2pt)",
@@ -95,7 +94,7 @@
     "body": [
       "#figure(",
       "  ```${1:python}",
-      "  ${2:// Write code here}",
+      "${2:// Write code here}",
       "  ```,",
       "  // caption: [${3:Source code description}]",
       ") <${4:label}>",

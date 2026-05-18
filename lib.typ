@@ -20,6 +20,7 @@
   indent: false,
   heading-numbering: none,
   heading-supplement: none,
+  equation-numbering: none,
   title-page: false,
   toc: false,
   body,
@@ -76,20 +77,31 @@
   }
 
   // --- Equation Numbering Logic ---
-  // If headings are numbered, equations follow section numbering (e.g., 1.1.1)
-  set math.equation(
-    numbering: if heading-numbering != none {
-      (..numbers) => {
-        let h-counter = counter(heading).get()
-        if h-counter.len() > 0 {
-          "(" + h-counter.map(str).join(".") + "." + numbering("1", ..numbers) + ")"
-        } else {
-          "(" + numbering("1", ..numbers) + ")"
-        }
+  // If headings are numbered, equations follow section numbering
+  show heading.where(level: 1): it => {
+    if equation-numbering == "1.1" and heading-numbering != none {
+      counter(math.equation).update(0)
+    }
+    it
+  }
+
+  let target-numbering = if equation-numbering == "1" {
+    "(1)"
+  } else if equation-numbering == "1.1" {
+    (..nums) => {
+      let h = counter(heading).at(here())
+      if h.len() > 0 and h.at(0) != 0 and heading-numbering != none {
+        "(" + str(h.at(0)) + "." + numbering("1", ..nums) + ")"
+      } else {
+        "(" + numbering("1", ..nums) + ")"
       }
-    } else {
-      "(1)"
-    },
+    }
+  } else {
+    equation-numbering
+  }
+
+  set math.equation(
+    numbering: target-numbering,
     supplement: [式],
   )
 
