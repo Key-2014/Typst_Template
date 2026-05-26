@@ -31,8 +31,9 @@ Run the following commands in your project's root directory (assuming Windows Po
 ```powershell
 # 1. Add the submodule
 mkdir -p lib
-git submodule add <URL_TO_THIS_REPO> lib/Typst_Template
-
+git submodule add https://github.com/Key-2014/Typst_Template lib/Typst_Template
+```
+```powershell
 # 2. Run the automatic setup script
 powershell -ExecutionPolicy Bypass -File .\lib\Typst_Template\init.ps1
 ```
