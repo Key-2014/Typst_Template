@@ -75,4 +75,4 @@ $ x = #ans($(-b +- sqrt(b^2 - 4a c)) / (2a)$) $
 このテンプレートをぜひ活用してみてください．
 
 #pagebreak()
-#bibliography("refs.bib")
+#bibliography("ex-refs.bib")
