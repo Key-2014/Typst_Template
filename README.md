@@ -53,55 +53,105 @@ powershell -ExecutionPolicy Bypass -File .\lib\Typst_Template\init.ps1
 
 ## Usage
 
-The easiest way to get started is to copy the contents of the `example/` directory (which includes `main.typ` and `refs.bib`) to your project's root folder and modify it.
+The easiest way to get started is to use one of the files in the `examples/` directory as a template for your project. We provide three official examples depending on your target format:
 
-Alternatively, in your project's main file (e.g., `main.typ`), initialize the document by importing the library and calling the `project` function:
+1. **[report_ja.typ](file:///C:/Users/keion/github/Typst_Template/examples/report_ja.typ)**: A Japanese report template (No separate cover page, uses `#report-header()`).
+2. **[thesis_ja.typ](file:///C:/Users/keion/github/Typst_Template/examples/thesis_ja.typ)**: A Japanese bachelor/master thesis template (Includes `#thesis-cover()`, `#thesis-abstract()`, and `#thesis-toc()`).
+3. **[thesis_en.typ](file:///C:/Users/keion/github/Typst_Template/examples/thesis_en.typ)**: An English thesis template (All fonts and captions formatted for English).
+
+In your main document file (e.g., `main.typ`), import the template and select configuration rules by calling `project`. You can then call layout components individually:
 
 ```typ
-// Import the template (this also loads the macros from utils.typ)
+// Import the template and math utilities
 #import "lib/Typst_Template/lib.typ": *
 
-// Initialize the document settings
+// 1. Initialize global layout rules
 #show: project.with(
-  title: "Document Title",
-  author: "Typst User",
-  student-id: "12345678",
-  date: datetime.today().display(),
-  heading-numbering: "1.1",  // Optional: Enable section numbering
-  equation-numbering: "1.1", // Optional: Enable equation numbering ("1" or "1.1")
-  title-page: true,          // Optional: Generate a standalone title page
-  toc: true,                 // Optional: Generate a table of contents
+  lang: "ja",
+  supplement-lang: "ja",
+  heading-numbering: "1.1",
+  equation-numbering: "1.1",
 )
 
+// 2. Render the cover page (optional)
+#thesis-cover(
+  academic-year: "令和7",
+  title: "Document Title",
+  affiliation: "Department of Physics",
+  student-id: "12345678",
+  author: "Typst User",
+  supervisor: "Professor Einstein",
+  date: "March 2026",
+  lang: "ja",
+)
+
+// 3. Render the abstract (optional)
+#thesis-abstract(lang: "ja")[
+  Your abstract goes here.
+]
+
+// 4. Render the Table of Contents (optional)
+#thesis-toc(lang: "ja")
+
+// 5. Start your main body
 = Introduction
-Start writing your content here. Japanese fonts and paragraph settings will be applied automatically.
-
-$ x = (-b +- sqrt(b^2 - 4a c)) / (2a) $
-
-// To add a bibliography, simply call the bibliography function at the end of your document.
-// The template automatically styles it as "参考文献" with the IEEE style.
-#pagebreak()
-#bibliography("refs.bib")
+Write your content here.
 ```
 
 ---
 
 ## Configuration
 
-The `project` function accepts the following arguments:
+### `project` (Global setup)
+The `#show: project.with(...)` rule configures document-wide spacing, fonts, and numbering.
 
 | Argument | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `title` | `string` / `content` | `""` | The title of the document. |
-| `author` | `string` / `content` | `""` | Author name. |
-| `student-id` | `string` / `content` | `""` | Student ID. |
-| `date` | `datetime` / `content` | `none` | Date (e.g., `datetime.today().display()`). |
-| `indent` | `boolean` | `false` | If `true`, the first line of each paragraph is indented by 1em. |
+| `lang` | `string` | `"ja"` | Document language (`"ja"` or `"en"`). Determines the default fallback font. |
+| `supplement-lang` | `string` | `"ja"` | Caption language (`"ja"`, `"en"`, or `"en-full"`). Determines labels like "Fig.", "Table", "Eq.". |
 | `heading-numbering` | `string` / `none` | `none` | Heading numbering style (e.g., `"1.1"`). |
-| `heading-supplement` | `content` / `none`| `none` | Heading prefix (e.g., `[Chapter]`). |
-| `equation-numbering` | `string` / `none` | `none` | Equation numbering style (`"1"` for continuous, `"1.1"` for section-based, or `none`). |
-| `title-page` | `boolean` | `false` | If `true`, generates a dedicated, vertically-centered title page without a page number. The page counter is reset to 1 for the following content. |
-| `toc` | `boolean` | `false` | If `true`, generates a Table of Contents (目次) before the main content. |
+| `equation-numbering` | `string` / `none` | `none` | Equation numbering style (`"1"` for continuous, `"1.1"` for section-based). |
+| `indent` | `boolean` | `false` | If `true`, the first line of each paragraph is indented by 1em. |
+
+### `thesis-cover` (Thesis Cover Page)
+Creates a beautifully aligned cover page centered on the page.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `academic-year` | `string` | `""` | The academic year (e.g., `"令和7"` or `"2025"`). |
+| `title` | `string` | `""` | The title of the thesis. |
+| `affiliation` | `string` | `""` | Department/Affiliation. |
+| `student-id` | `string` | `""` | Student identification number. |
+| `author` | `string` | `""` | Author name. |
+| `supervisor` | `string` | `""` | Supervisor's name and title. |
+| `date` | `string` | `""` | Submission date. |
+| `lang` | `string` | `"ja"` | Label language (`"ja"` or `"en"`). |
+
+### `report-header` (Compact Report Header)
+Inserts a simple, right-aligned header block at the top of the first page.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `title` | `string` | `""` | The report title. |
+| `author` | `string` | `""` | Author name. |
+| `student-id` | `string` | `""` | Student ID. |
+| `date` | `datetime` / `content` | `none` | Date. |
+| `lang` | `string` | `"ja"` | Label language (`"ja"` or `"en"`). |
+
+### `thesis-abstract` (Abstract Block)
+Formats the abstract text and centers the abstract title.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `lang` | `string` | `"ja"` | Label language (`"ja"` or `"en"`). Displays "概要" or "Abstract". |
+| `body` | `content` | (Required) | The abstract content. |
+
+### `thesis-toc` (Table of Contents)
+Renders a Table of Contents (目次). Page numbering is automatically managed: Roman numerals (`i, ii...`) are used from the TOC page up to the main body, where numbering is reset to `1` (Arabic numerals).
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `lang` | `string` | `"ja"` | Label language (`"ja"` or `"en"`). Displays "目次" or "Table of Contents". |
 
 > **💡 Equation Numbering**
 > Equation numbering is controlled by the `equation-numbering` parameter:
