@@ -152,54 +152,106 @@
   body
 }
 
-#let cover(
+// --- Layout Component: Thesis Cover Page ---
+#let thesis-cover(
+  academic-year: "",
   title: "",
-  affiliation: "", // 所属（大学・学部・学科など）
-  supervisor: "",  // 指導教員
+  affiliation: "",
   student-id: "",
   author: "",
-  date: none,
-  title-page: false,
+  supervisor: "",
+  date: "",
+  lang: "ja",
 ) = {
-  // このページだけページ番号を非表示にする設定
+  // Hide page numbers for the cover page
   set page(numbering: none)
-  
-  // --- Title & Metadata Block ---
-  if title-page {
-      page(numbering: none, align(center + horizon)[
-        #if title != "" [ #text(24pt, weight: "bold")[#title] \ ]
-        #v(2em)
-        #if affiliation != "" [#text(14pt)[所属： #affiliation] \ ]
-        #if student-id != "" [ #text(14pt)[学生番号: #student-id] \ ]
-        #if author != "" [ #text(14pt)[氏名: #author] \ ]
-        #if supervisor != "" [#text(14pt)[指導教員： #supervisor] \ ]
-        #if date != none [ \ #text(12pt)[#date] ]
-      ])
-      // Reset page counter after title page
-      counter(page).update(1)
-  } else {
-    if title != "" {
-      align(center, text(17pt, weight: "bold")[#title])
-      v(1em)
-    }
-      if author != "" or student-id != "" or date != none {
-      align(right)[
-        #if student-id != "" [学生番号: #student-id \ ]
-        #if author != "" [氏名: #author \ ]
-        #if date != none [#date]
+
+  align(center + horizon)[
+    #if academic-year != "" [
+      #text(16pt)[#academic-year #if lang == "ja" [年度 卒業論文] else [Bachelor's Thesis]]
+      #v(2em)
+    ]
+    
+    #text(24pt, weight: "bold")[#title]
+    
+    #v(8em)
+    
+    // Grid alignment for metadata fields
+    #align(center)[
+      #block(width: 65%)[
+        #grid(
+          columns: (auto, auto),
+          row-gutter: 1.2em,
+          align: (right, left),
+          if lang == "ja" [所属:] else [Affiliation:], h(1em) + affiliation,
+          if lang == "ja" [学生番号:] else [Student ID:], h(1em) + student-id,
+          if lang == "ja" [氏名:] else [Author:], h(1em) + author,
+          if lang == "ja" [指導教員:] else [Supervisor:], h(1em) + supervisor,
+          if lang == "ja" [提出日:] else [Date:], h(1em) + date,
+        )
       ]
-      v(2em)
-    }
-  }
+    ]
+  ]
+  pagebreak()
 }
 
-#let thesis-toc() = {
+// --- Layout Component: Report Header ---
+// Generates a compact top header for shorter documents or reports that do not require a separate cover page.
+#let report-header(
+  title: "",
+  author: "",
+  student-id: "",
+  date: none,
+  lang: "ja",
+) = {
+  align(center)[
+    #text(17pt, weight: "bold")[#title]
+    #v(1em)
+  ]
+  align(right)[
+    #if student-id != "" [#if lang == "ja" { [学生番号:] } else { [Student ID:] } #student-id \ ]
+    #if author != "" [#if lang == "ja" { [氏名:] } else { [Author:] } #author \ ]
+    #if date != none [#date]
+  ]
+  v(2em)
+}
+
+// --- Layout Component: Abstract ---
+// Formats the abstract/summary section.
+#let thesis-abstract(
+  lang: "ja",
+  body
+) = {
+  let heading-title = if lang == "ja" { "概要" } else { "Abstract" }
+  align(center)[
+    #text(14pt, weight: "bold")[#heading-title]
+    #v(1.2em)
+  ]
+  
+  block(width: 90%, align(left)[
+    #set par(first-line-indent: 1em)
+    #body
+  ])
+  pagebreak()
+}
+
+// --- Layout Component: Table of Contents ---
+// Generates the table of contents and resets the page numbering system.
+// Front matter (TOC, abstract) uses Roman numerals (i, ii...), while the main body resets to Arabic numerals (1, 2...).
+#let thesis-toc(
+  lang: "ja"
+) = {
+  // Use Roman numerals for the TOC page
   set page(numbering: "i")
   counter(page).update(1)
 
-  align(center)[#text(16pt, weight: "bold")[目次]]
-  v(1em)
+  let label_of_toc = if lang == "ja" { "目次" } else { "Table of Contents" }
+  align(center)[#text(16pt, weight: "bold")[#label_of_toc]]
+  v(1.2em)
   outline(title: none, indent: auto)
 
   pagebreak()
+  // Reset and switch to Arabic numerals for the following main body pages
+  set page(numbering: "1")
+  counter(page).update(1)
 }
