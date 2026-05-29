@@ -11,24 +11,43 @@
 // --- User-defined Macros ---
 #import "utils.typ": *
 
-// --- Main Template ---
+// --- Language & Caption Mappings ---
+// Defines localized labels for figures, tables, equations, and bibliography titles.
+#let supplement-labels = (
+  ja: (
+    fig: "図",
+    tab: "表",
+    eq: "式",
+    citation: "参考文献"
+  ),
+  en: (
+    fig: "Fig.",
+    tab: "Table",
+    eq: "Eq.",
+    citation: "References"
+  ),
+  en-full: (
+    fig: "Figure",
+    tab: "Table",
+    eq: "Equation",
+    citation: "References"
+  ),
+)
+
+// --- Main Template Setup---
+// Configures global document rules such as margins, fonts, paragraphs, and heading spacing.
 #let project(
-  indent: false,
-  heading-numbering: none,
-  heading-supplement: none,
-  equation-numbering: none,
-  toc: false,
   lang: "ja",
   supplement-lang: "ja",
+  heading-numbering: none,
+  equation-numbering: none,
+  indent: false,
   body,
 ) = {
-  if toc {
-    thesis-toc()
-    counter(page).update(1)
-  }
+  // Select labels dynamically based on the language
+  let labels = supplement-labels.at(supplement-lang, default: supplement-labels.ja)
 
-  let labels = supplement-labels.at(supplement-lang, default: labels.tab)
-  // --- Layout & Document Properties ---
+  // --- Page & Document Properties ---
   set page(
     paper: "a4",
     margin: (x: 25mm, y: 30mm),
@@ -44,21 +63,34 @@
     leading: 0.8em,
   )
 
+  // Configure fallback fonts depending on the language
+  let font-family = if lang == "ja" {
+    ("New Computer Modern", "Harano Aji Mincho", "New Computer Modern Math")
+  } else {
+    ("New Computer Modern", "New Computer Modern Math")
+  }
+
+  let math-font-family = if lang == "ja" {
+    ("New Computer Modern Math", "New Computer Modern", "Harano Aji Mincho")
+  } else {
+    ("New Computer Modern Math", "New Computer Modern")
+  }
+
   set text(
-    font: ("New Computer Modern", "Harano Aji Mincho", "New Computer Modern Math"),
+    font: font-family,
     size: 11pt,
-    lang: "ja",
+    lang: lang,
   )
 
+  // --- Bibliography Configuration ---
   set bibliography(
-    title: "参考文献",
+    title: labels.citation,
     style: "ieee",
   )
 
-  // --- Typography Rules ---
-  // Ensure math font consistency
+  // --- Typography Rules for Math---
   show math.equation: set text(
-    font: ("New Computer Modern Math", "Harano Aji Mincho"),
+    font: math-font-family,
     size: 11pt,
   )
 
@@ -71,7 +103,6 @@
   // --- Heading Configuration ---
   set heading(
     numbering: heading-numbering,
-    supplement: heading-supplement,
   )
 
   // Add vertical spacing and bold math in headings
@@ -83,7 +114,7 @@
   }
 
   // --- Equation Numbering Logic ---
-  // If headings are numbered, equations follow section numbering
+  // Reset equation counter at level-1 headings if equation-numbering is "1.1"
   show heading.where(level: 1): it => {
     if equation-numbering == "1.1" and heading-numbering != none {
       counter(math.equation).update(0)
@@ -91,6 +122,7 @@
     it
   }
 
+  // Format equation numbers (e.g., "(1)" or "(1.1)")
   let target-numbering = if equation-numbering == "1" {
     "(1)"
   } else if equation-numbering == "1.1" {
@@ -119,13 +151,6 @@
   // --- Main Content ---
   body
 }
-
-// --- Language library ---
-#let supplement-labels = (
-  ja: (fig: [図], tab: [表], eq: [式], author_supplement: [氏名], student-id: [学生番号]),
-  en: (fig: [Fig.], tab: [Table], eq: [Eq.]),
-  en-full: (fig: [Figure], tab: [Table], eq: [Equation]),
-)
 
 #let cover(
   title: "",
