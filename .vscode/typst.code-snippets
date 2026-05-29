@@ -7,21 +7,45 @@
     "body": [
       "#import \"../lib/Typst_Template/lib.typ\": *",
       "#show: project.with(",
-      "  title: \"${1:title}\",",
-      "  author: \"\",",
-      "  student-id: \"\",",
+      "  supplement-lang: \"ja\",",
       "  heading-numbering: none,",
       "  equation-numbering: none,",
+      ")",
+      "#report-header(",
+      "  title: \"${1:title}\",",
+      "  student-id: \"\",",
+      "  author: \"\",",
+      "  date: none,",
       ")",
       "",
       "$0"
     ],
     "description": "Initialize a new report document with the custom template. Sets up title page, fonts, and numbering."
   },
+  "Typst_thesis_Cover_etc":{
+    "prefix": "typ-thesis-cover",
+    "body": [
+      "#thesis-cover(",
+      "  academic-year: \"\",",
+      "  title: \"\",",
+      "  affiliation: \"\",",
+      "  student-id: \"\",",
+      "  author: \"\",",
+      "  supervisor: \"\",",
+      "  date: \"\",",
+      "  lang: \"ja\",",
+      ")",
+      "#thesis-abstract(lang: \"ja\")[",
+      "  ",
+      "]",
+      "#thesis-toc(lang: \"ja\")",
+    ],
+    "description": "This is Template of thesis-cover, abstract, and table of contents."
+  },
   "Typst_normal_equation_numbering": {
     "prefix": "typ-eqnum",
     "body": [
-      "#set math.equation(numbering: \"(1)\", number-align: bottom, supplement: [式])",
+      "#set math.equation(numbering: \"(1)\")",
       "$0"
     ],
     "description": "Enable standard equation numbering, e.g., (1), (2)."
@@ -37,6 +61,31 @@
       "$0"
     ],
     "description": "Set a custom equation numbering prefix (e.g., 6.5.1) and reset the counter. Useful for textbook summaries."
+  },
+  "Typst_equation_counter": {
+    "prefix": "typ-eq-counter",
+    "body": [
+      "#counter(math.equation).update(${1:0})",
+    ],
+    "description": "Update counter of math.equation numbering",
+  },
+  "Typst_equation_manual_tag": {
+    "prefix": "typ-eqtag",
+    "body": [
+      "#eqtag($ ${1:a^2 + b^2 = c^2} $, \"${2:A.1}\")$0"
+    ],
+    "description": "Tag a single equation manually using eqtag() without affecting the global counter."
+  },
+  "Typst_equation_disable": {
+    "prefix": [
+      "typ-eq-none",
+      "typ-eqdelete"
+    ],
+    "body": [
+      "#set math.equation(numbering: none)",
+      "$0"
+    ],
+    "description": "Disable equation numbering from this point forward."
   },
   "Typst_cetz_template": {
     "prefix": "typ-cetz",
@@ -138,22 +187,11 @@
     ],
     "description": "Format physical units using the u() macro from utils.typ. Supports complex unit strings (e.g., m/s^2)."
   },
-  "Typst_equation_manual_tag": {
-    "prefix": "typ-eqtag",
+  "Typst_bibliography": {
+    "prefix": "typ-bibliography",
     "body": [
-      "#eqtag($ ${1:a^2 + b^2 = c^2} $, \"${2:A.1}\")$0"
-    ],
-    "description": "Tag a single equation manually using eqtag() without affecting the global counter."
-  },
-  "Typst_equation_disable": {
-    "prefix": [
-      "typ-eq-none",
-      "typ-eqdelete"
-    ],
-    "body": [
-      "#set math.equation(numbering: none)",
-      "$0"
-    ],
-    "description": "Disable equation numbering from this point forward."
+      "#pagebreak()",
+      "#bibliography(\"${1:}\")"
+    ]
   }
 }

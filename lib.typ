@@ -141,6 +141,7 @@
   set math.equation(
     numbering: target-numbering,
     supplement: labels.eq,
+    number-align: bottom,
   )
 
   // --- Tables & Figures ---
