@@ -16,18 +16,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           submodules: recursive # Fetch submodules (like Typst_Template)
 
       - name: Setup Typst
-        uses: typst-community/setup-typst@v3
+        uses: typst-community/setup-typst@f5c90506c7ae74fca20e339034af05c52e0eda92 # v3.1.0
 
       - name: Download Harano Aji Fonts
         run: |
           mkdir -p .fonts
           # Download using curl with retries and timeouts to prevent hangs
-          # -f: fail on server error, -L: follow redirects, -o: output file
+          # -f (fail on server error), -L (follow redirects), -o (output file)
           curl -fLo .fonts/HaranoAjiMincho-Regular.otf --retry 3 --connect-timeout 10 --max-time 300 \
             https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Regular.otf
           curl -fLo .fonts/HaranoAjiMincho-Bold.otf --retry 3 --connect-timeout 10 --max-time 300 \
@@ -54,7 +54,7 @@ jobs:
           done
 
       - name: Create Release and Upload PDF
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         if: hashFiles('*.pdf') != '' # Only create a release if at least one PDF was generated
         with:
           tag_name: build-${{ github.run_number }}
