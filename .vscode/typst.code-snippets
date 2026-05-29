@@ -5,7 +5,7 @@
       "typ-template"
     ],
     "body": [
-      "#import \"../lib/Typst_Template/lib.typ\": *",
+      "#import \"../lib/Typst_Template/lib_v2.0.0.typ\": *",
       "#show: project.with(",
       "  supplement-lang: \"ja\",",
       "  heading-numbering: none,",
@@ -39,6 +39,7 @@
       "  ",
       "]",
       "#thesis-toc(lang: \"ja\")",
+      "",
     ],
     "description": "This is Template of thesis-cover, abstract, and table of contents."
   },

@@ -1,5 +1,5 @@
 // Import the template and utilities
-#import "../lib.typ": *
+#import "../lib_v2.0.0.typ": *
 
 // 1. Initialize global document rules (Configured for English)
 #show: project.with(
