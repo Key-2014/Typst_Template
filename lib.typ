@@ -13,21 +13,18 @@
 
 // --- Main Template ---
 #let project(
+  title: "",
+  author: "",
+  student-id: "",
+  date: none,
   indent: false,
   heading-numbering: none,
   heading-supplement: none,
   equation-numbering: none,
+  title-page: false,
   toc: false,
-  lang: "ja",
-  supplement-lang: "ja",
   body,
 ) = {
-  if toc {
-    thesis-toc()
-    counter(page).update(1)
-  }
-
-  let labels = supplement-labels.at(supplement-lang, default: labels.tab)
   // --- Layout & Document Properties ---
   set page(
     paper: "a4",
@@ -108,56 +105,32 @@
 
   set math.equation(
     numbering: target-numbering,
-    supplement: labels.eq,
+    supplement: [式],
   )
 
   // --- Tables & Figures ---
-  set figure(supplement: labels.fig)
-  show figure.where(kind: table): set figure(supplement: labels.tab)
-  show figure.where(kind: table): set figure.caption(position: top)
+  set figure(supplement: [図])
+  show figure.where(kind: table): set figure(supplement: [表])
+  show figure.where(kind: table): set figure.caption(position: top) //
 
-  // --- Main Content ---
-  body
-}
-
-// --- Language library ---
-#let supplement-labels = (
-  ja: (fig: [図], tab: [表], eq: [式], author_supplement: [氏名], student-id: [学生番号]),
-  en: (fig: [Fig.], tab: [Table], eq: [Eq.]),
-  en-full: (fig: [Figure], tab: [Table], eq: [Equation]),
-)
-
-#let cover(
-  title: "",
-  affiliation: "", // 所属（大学・学部・学科など）
-  supervisor: "",  // 指導教員
-  student-id: "",
-  author: "",
-  date: none,
-  title-page: false,
-) = {
-  // このページだけページ番号を非表示にする設定
-  set page(numbering: none)
-  
   // --- Title & Metadata Block ---
   if title-page {
-      page(numbering: none, align(center + horizon)[
-        #if title != "" [ #text(24pt, weight: "bold")[#title] \ ]
-        #v(2em)
-        #if affiliation != "" [#text(14pt)[所属： #affiliation] \ ]
-        #if student-id != "" [ #text(14pt)[学生番号: #student-id] \ ]
-        #if author != "" [ #text(14pt)[氏名: #author] \ ]
-        #if supervisor != "" [#text(14pt)[指導教員： #supervisor] \ ]
-        #if date != none [ \ #text(12pt)[#date] ]
-      ])
-      // Reset page counter after title page
-      counter(page).update(1)
+    page(numbering: none, align(center + horizon)[
+      #if title != "" [ #text(24pt, weight: "bold")[#title] \ ]
+      #v(2em)
+      #if student-id != "" [ #text(14pt)[学生番号: #student-id] \ ]
+      #if author != "" [ #text(14pt)[氏名: #author] \ ]
+      #if date != none [ \ #text(12pt)[#date] ]
+    ])
+    // Reset page counter after title page
+    counter(page).update(1)
   } else {
     if title != "" {
       align(center, text(17pt, weight: "bold")[#title])
       v(1em)
     }
-      if author != "" or student-id != "" or date != none {
+
+    if author != "" or student-id != "" or date != none {
       align(right)[
         #if student-id != "" [学生番号: #student-id \ ]
         #if author != "" [氏名: #author \ ]
@@ -166,15 +139,15 @@
       v(2em)
     }
   }
-}
 
-#let thesis-toc() = {
-  set page(numbering: "i")
-  counter(page).update(1)
+  // --- Table of Contents ---
+  if toc {
+    align(center)[#text(16pt, weight: "bold")[目次]]
+    v(1em)
+    outline(title: none, indent: auto)
+    pagebreak()
+  }
 
-  align(center)[#text(16pt, weight: "bold")[目次]]
-  v(1em)
-  outline(title: none, indent: auto)
-
-  pagebreak()
+  // --- Main Content ---
+  body
 }
