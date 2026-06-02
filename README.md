@@ -41,6 +41,7 @@ powershell -ExecutionPolicy Bypass -File .\lib\Typst_Template\init.ps1
 > **What does `init.ps1` do?**
 > - **CI/CD**: Copies the GitHub Actions workflow to automatically build and release PDFs on push.
 > - **Snippets**: Copies the highly optimized `.vscode/typst.code-snippets` to your workspace so they are instantly available.
+> - **VS Code Settings**: Automatically configures/merges `.vscode/settings.json` to enable quick autocomplete suggestions in strings (`editor.quickSuggestions.strings = true`).
 > - **.gitignore**: Safely appends `*.pdf` to your `.gitignore` to prevent generated PDFs from bloating your repository.
 
 > **Updating the Submodule**:
@@ -198,13 +199,15 @@ This template includes a `.vscode/typst.code-snippets` file that provides highly
 To use them, simply type `typ-` in a `.typ` file and select from the suggestions:
 
 ### Template Initialization
-- **`typ-report`**: Initializes a new report document with the custom template (sets up title page, fonts, and numbering).
+- **`typ-report`** (or **`typ-template`**): Initializes a new report document with the custom template (sets up title page, fonts, and numbering).
+- **`typ-thesis-cover`**: Inserts a block layout containing a thesis cover page, abstract block, and table of contents.
 
 ### Content Blocks
 - **`typ-png`**: Inserts a figure containing an image with optional caption and label.
 - **`typ-table`**: Inserts a table wrapped in a figure.
 - **`typ-code`**: Inserts a source code block with syntax highlighting and caption.
 - **`typ-cetz`**: Inserts a CeTZ drawing canvas with a helper grid.
+- **`typ-bibliography`**: Inserts a bibliography reference block loader.
 
 ### Macros from `utils.typ`
 - **`typ-frect`**: Inserts a full-width framed rectangle block (`#frect[...]`). Ideal for theorems and definitions.
@@ -215,6 +218,7 @@ To use them, simply type `typ-` in a `.typ` file and select from the suggestions
 ### Equation Numbering Control
 - **`typ-eqnum`**: Enables standard equation numbering `(1)`.
 - **`typ-eq-manual`** (or **`typ-eq-prefix`**): Manually sets the equation numbering prefix (e.g., to `(6.5.1)` or `(1.1.1)`) and optionally resets the counter.
+- **`typ-eq-counter`**: Resets or sets the math equation counter to a specific value.
 - **`typ-eqtag`**: Tags a single equation manually using `eqtag()` without affecting the global counter.
 - **`typ-eq-none`** (or **`typ-eqdelete`**): Disables equation numbering from that point forward.
 
@@ -226,7 +230,7 @@ The following official/preview Typst packages are pre-imported in the template, 
 
 * `@preview/physica:0.9.8` (Advanced notations for physics and math)
 * `@preview/unify:0.8.0` (Number and unit formatting)
-* `@preview/cetz:0.5.0` (Drawing and diagrams)
+* `@preview/cetz:0.5.2` (Drawing and diagrams)
 * `@preview/showybox:2.0.4` (Colorful emphasis boxes)
 * `@preview/whalogen:0.3.0` (Chemical equations)
 
@@ -258,13 +262,37 @@ This template provides a ready-to-use GitHub Actions workflow (`.github/workflow
 
 **This workflow automatically downloads the required "Harano Aji Mincho" fonts to the cloud server before compilation, ensuring perfect reproducibility without bloating your Git repository with heavy font files.**
 
+### Core Features of the Workflow:
+1. **Latest Release Upload with Overwrite**: It publishes to a single `latest` release on GitHub, replacing existing PDFs with newer ones. This keeps your release page clean and organized.
+2. **Differential Compilation**: On a push, it only compiles `.typ` files that have been added or modified in that push, significantly reducing execution time.
+3. **Submodule Change Detection**: If the submodule (like `Typst_Template`) or the workflow itself is added/updated, it automatically triggers a full compilation of all `.typ` files to ensure they align with the latest template layout.
+4. **Project Root Specification (`--root .`)**: Compiles with the root set to the repository root. This resolves imports correctly (e.g. `#import "/lib/Typst_Template/lib.typ"`) and satisfies Typst's security sandbox requirements.
+5. **Conflict-Free Asset Names (Option A)**: Automatically prepends the parent directory path to the output PDF file name (e.g. `Feynman_seminar_2-4.pdf`) when uploading to the flat GitHub Release assets list.
+6. **Error Tolerance & Skip**: If a `.typ` file has a syntax error, the workflow skips it, reports the failure in the Job Summary, and continues compiling the rest.
+7. **Write Permission Fallback**: If the parent repository doesn't have write permissions enabled for workflows:
+   - The release step will fail to trigger email notifications (notifying you of the setup issue).
+   - Yet, the compiled PDFs are still uploaded as **GitHub Actions Artifacts** (accessible under the Actions run page).
+   - Setup instructions to grant write permissions are printed on the Job Summary page.
+
+### Required Setup: Enabling Release Uploads (Workflow Permissions)
+
+By default, newly created GitHub repositories may have read-only permissions for the default `GITHUB_TOKEN`. To allow the workflow to automatically publish PDFs to GitHub Releases, you must grant write permissions:
+
+1. In your GitHub repository page, navigate to **Settings** > **Actions** > **General**.
+2. Scroll down to the **Workflow permissions** section.
+3. Select **Read and write permissions**.
+4. Click **Save**.
+
+> [!TIP]
+> If you omit this configuration, the workflow will fail at the release upload step and send you a notification email (alerting you of the setup issue). However, the compilation itself is successful and your PDFs are still securely uploaded as a GitHub Actions Artifact (named `pdf-reports`) on the workflow run page.
+
 ### How to use in your report repository:
 
 Because GitHub Actions only run workflows located in the root directory of a repository, the workflow must be copied to your parent repository.
 
 **The easiest way to set this up is to run the `init.ps1` script during installation** (see the Installation section). This script will automatically copy the workflow file into your parent repository's `.github/workflows/` directory.
 
-Once configured, GitHub will automatically discover any `.typ` files in your parent repository's root directory, build them, and publish a new PDF Release on every push!
+Once configured, GitHub will automatically discover any `.typ` files in your parent repository, build them, and publish them on every push!
 
 ---
 
