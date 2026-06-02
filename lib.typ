@@ -131,9 +131,11 @@
     }
 
     if author != "" or student-id != "" or date != none {
-      align(right)[
-        #if student-id != "" [学生番号: #student-id \ ]
-        #if author != "" [氏名: #author \ ]
+      align(center)[
+        #if student-id != "" [ #student-id ]
+        #if student-id != "" and author != "" [ #h(2em) ]
+        #if author != "" [ #author ]
+        #if (student-id != "" or author != "") and date != none [ \ ]
         #if date != none [#date]
       ]
       v(2em)

@@ -18,19 +18,19 @@
     fig: "図",
     tab: "表",
     eq: "式",
-    citation: "参考文献"
+    citation: "参考文献",
   ),
   en: (
     fig: "Fig.",
     tab: "Table",
     eq: "Eq.",
-    citation: "References"
+    citation: "References",
   ),
   en-full: (
     fig: "Figure",
     tab: "Table",
     eq: "Equation",
-    citation: "References"
+    citation: "References",
   ),
 )
 
@@ -171,11 +171,11 @@
       #text(16pt)[#academic-year #if lang == "ja" [年度 卒業論文] else [Bachelor's Thesis]]
       #v(2em)
     ]
-    
+
     #text(24pt, weight: "bold")[#title]
-    
+
     #v(8em)
-    
+
     // Grid alignment for metadata fields
     #align(center)[
       #block(width: 65%)[
@@ -208,9 +208,11 @@
     #text(17pt, weight: "bold")[#title]
     #v(1em)
   ]
-  align(right)[
-    #if student-id != "" [#if lang == "ja" { [学生番号:] } else { [Student ID:] } #student-id \ ]
-    #if author != "" [#if lang == "ja" { [氏名:] } else { [Author:] } #author \ ]
+  align(center)[
+    #if student-id != "" [ #student-id ]
+    #if student-id != "" and author != "" [ #h(2em) ]
+    #if author != "" [ #author ]
+    #if (student-id != "" or author != "") and date != none [ \ ]
     #if date != none [#date]
   ]
   v(2em)
@@ -220,14 +222,14 @@
 // Formats the abstract/summary section.
 #let thesis-abstract(
   lang: "ja",
-  body
+  body,
 ) = {
   let heading-title = if lang == "ja" { "概要" } else { "Abstract" }
   align(center)[
     #text(14pt, weight: "bold")[#heading-title]
     #v(1.2em)
   ]
-  
+
   block(width: 90%, align(left)[
     #set par(first-line-indent: 1em)
     #body
@@ -239,7 +241,7 @@
 // Generates the table of contents and resets the page numbering system.
 // Front matter (TOC, abstract) uses Roman numerals (i, ii...), while the main body resets to Arabic numerals (1, 2...).
 #let thesis-toc(
-  lang: "ja"
+  lang: "ja",
 ) = {
   // Use Roman numerals for the TOC page
   set page(numbering: "i")
