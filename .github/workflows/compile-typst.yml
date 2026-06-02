@@ -34,13 +34,14 @@ jobs:
             https://github.com/trueroad/HaranoAjiFonts/raw/master/HaranoAjiMincho-Bold.otf
 
       - name: Compile Typst
+        id: compile
         env:
           TYPST_FONT_PATHS: .fonts
         run: |
-          # Automatically compile all .typ files in the root directory
-          # To exclude specific files, add them to the case statement below
-          for file in *.typ; do
-            case "$file" in
+          compiled=false
+          while IFS= read -r -d '' file; do
+            basename_file=$(basename "$file")
+            case "$basename_file" in
               lib.typ|utils.typ|*.template.typ)
                 echo "Skipping ignored file: $file"
                 continue
@@ -49,16 +50,24 @@ jobs:
             
             if [ -f "$file" ]; then
               echo "Compiling $file..."
-              typst compile "$file" "${file%.typ}.pdf"
+              if typst compile "$file" "${file%.typ}.pdf"; then
+                compiled=true
+              fi
             fi
-          done
+          done < <(find . -name "*.typ" -not -path '*/.*' -not -path '*/Typst_Template/*' -print0)
+          
+          echo "compiled=$compiled" >> "$GITHUB_OUTPUT"
 
       - name: Create Release and Upload PDF
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
-        if: hashFiles('*.pdf') != '' # Only create a release if at least one PDF was generated
+        if: steps.compile.outputs.compiled == 'true'
         with:
           tag_name: build-${{ github.run_number }}
           name: Auto-generated Report (Build ${{ github.run_number }})
           body: "Automated PDF build triggered by commit ${{ github.sha }}"
-          files: "*.pdf"
+          files: |
+            **/*.pdf
+            !**/Typst_Template/**
+            !**/.*/**
           fail_on_unmatched_files: false
+
