@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           submodules: recursive # Fetch submodules (like Typst_Template)
+          fetch-depth: 0 # Fetch all history for git diff to work
 
       - name: Setup Typst
         uses: typst-community/setup-typst@f5c90506c7ae74fca20e339034af05c52e0eda92 # v3.1.0
@@ -57,25 +58,29 @@ jobs:
             force_full_compile=true
             echo "First commit or non-push event. Forcing full compile."
           else
-            # Fetch git diff to see what changed
-            changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.after }}")
-            echo "Changed files in this push:"
-            echo "$changed_files"
-            
-            # If workflows changed, force full compile
-            if echo "$changed_files" | grep -q "^\.github/workflows/"; then
+            # Fetch git diff to see what changed, catch error if it fails (e.g. shallow clone)
+            if ! changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.after }}" 2>/dev/null); then
               force_full_compile=true
-              echo "Workflow files changed. Forcing full compile."
-            fi
-            
-            # If any submodule path changed (updates or additions), force full compile
-            for sm in "${submodule_paths[@]}"; do
-              if echo "$changed_files" | grep -q "^$sm"; then
+              echo "git diff failed (possibly due to shallow clone). Forcing full compile."
+            else
+              echo "Changed files in this push:"
+              echo "$changed_files"
+              
+              # If workflows changed, force full compile
+              if echo "$changed_files" | grep -q "^\.github/workflows/"; then
                 force_full_compile=true
-                echo "Submodule '$sm' was updated. Forcing full compile."
-                break
+                echo "Workflow files changed. Forcing full compile."
               fi
-            done
+              
+              # If any submodule path changed (updates or additions), force full compile
+              for sm in "${submodule_paths[@]}"; do
+                if echo "$changed_files" | grep -q "^$sm"; then
+                  force_full_compile=true
+                  echo "Submodule '$sm' was updated. Forcing full compile."
+                  break
+                fi
+              done
+            fi
           fi
 
           # 3. Gather target files to compile
@@ -195,26 +200,31 @@ jobs:
           if [ "$release_success" = "true" ]; then
             # We only detect deletions if it's a push and not first push
             if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] && [ "${{ github.event_name }}" = "push" ]; then
-              while read -r file; do
-                if [ -n "$file" ]; then
-                  # Ensure the deleted file was not in a submodule
-                  in_submodule=false
-                  for sm in "${submodule_paths[@]}"; do
-                    if [[ "$file" =~ ^$sm/ ]]; then
-                      in_submodule=true
-                      break
+              deleted_files=""
+              if ! deleted_files=$(git diff --name-only --diff-filter=D "${{ github.event.before }}" "${{ github.event.after }}" 2>/dev/null); then
+                echo "git diff failed for deletions detection (possibly due to shallow clone). Skipping deletion sync."
+              else
+                while read -r file; do
+                  if [ -n "$file" ]; then
+                    # Ensure the deleted file was not in a submodule
+                    in_submodule=false
+                    for sm in "${submodule_paths[@]}"; do
+                      if [[ "$file" =~ ^$sm/ ]]; then
+                        in_submodule=true
+                        break
+                      fi
+                    done
+                    
+                    if [ "$in_submodule" = "false" ]; then
+                      clean_path="${file#./}"
+                      asset_name="${clean_path//\//_}"
+                      asset_name="${asset_name%.typ}.pdf"
+                      echo "Deleting deleted asset from release: $asset_name"
+                      gh release delete-asset latest "$asset_name" -y || true
                     fi
-                  done
-                  
-                  if [ "$in_submodule" = "false" ]; then
-                    clean_path="${file#./}"
-                    asset_name="${clean_path//\//_}"
-                    asset_name="${asset_name%.typ}.pdf"
-                    echo "Deleting deleted asset from release: $asset_name"
-                    gh release delete-asset latest "$asset_name" -y || true
                   fi
-                fi
-              done < <(git diff --name-only --diff-filter=D "${{ github.event.before }}" "${{ github.event.after }}" | grep '\.typ$' || true)
+                done <<< "$deleted_files"
+              fi
             fi
 
             # 4. Upload new/updated PDFs
