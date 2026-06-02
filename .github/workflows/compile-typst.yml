@@ -248,7 +248,8 @@ jobs:
               echo "#### 今回のビルド結果："
               echo "代わりに、この実行ページの「Artifacts（成果物）」セクションにコンパイル済みのPDFを保存しました（下部のステップでアップロード済み）。"
             } >> $GITHUB_STEP_SUMMARY
-            echo "Release failed. Falling back to artifacts."
+            echo "::error::Release write permissions are not configured. Falling back to artifacts."
+            exit 1
           else
             echo "Release successfully updated."
           fi
