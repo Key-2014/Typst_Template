@@ -244,7 +244,7 @@ jobs:
           fi
 
       - name: Upload PDF Artifacts
-        uses: actions/upload-artifact@0b2256b8c012f08d8c5a93b9508546f04d0d0891 # v4.3.3
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v7.0.1
         if: always() && steps.compile.outputs.compiled == 'true'
         with:
           name: pdf-reports
