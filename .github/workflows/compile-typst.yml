@@ -12,7 +12,7 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required for creating releases
+      contents: write # Required for creating/updating releases
 
     steps:
       - name: Checkout repository
@@ -38,36 +38,215 @@ jobs:
         env:
           TYPST_FONT_PATHS: .fonts
         run: |
+          # 1. Get all submodule paths dynamically to exclude them
+          exclude_paths=()
+          submodule_paths=()
+          if [ -f .gitmodules ]; then
+            while read -r path; do
+              if [ -n "$path" ]; then
+                exclude_paths+=("-not" "-path" "./$path/*")
+                submodule_paths+=("$path")
+                echo "Detected submodule: $path"
+              fi
+            done < <(git submodule status | awk '{print $2}')
+          fi
+
+          # 2. Determine if full compilation is required
+          force_full_compile=false
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ] || [ "${{ github.event_name }}" != "push" ]; then
+            force_full_compile=true
+            echo "First commit or non-push event. Forcing full compile."
+          else
+            # Fetch git diff to see what changed
+            changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.after }}")
+            echo "Changed files in this push:"
+            echo "$changed_files"
+            
+            # If workflows changed, force full compile
+            if echo "$changed_files" | grep -q "^\.github/workflows/"; then
+              force_full_compile=true
+              echo "Workflow files changed. Forcing full compile."
+            fi
+            
+            # If any submodule path changed (updates or additions), force full compile
+            for sm in "${submodule_paths[@]}"; do
+              if echo "$changed_files" | grep -q "^$sm"; then
+                force_full_compile=true
+                echo "Submodule '$sm' was updated. Forcing full compile."
+                break
+              fi
+            done
+          fi
+
+          # 3. Gather target files to compile
+          files_to_process=()
+          if [ "$force_full_compile" = "true" ]; then
+            echo "Gathering all .typ files in the workspace (excluding submodules and temp directories)..."
+            while IFS= read -r -d '' file; do
+              files_to_process+=("$file")
+            done < <(find . -name "*.typ" -not -path '*/.*' -not -path './dist/*' "${exclude_paths[@]}" -print0)
+          else
+            echo "Gathering only modified/added .typ files in this push..."
+            while read -r file; do
+              if [ -n "$file" ] && [ -f "$file" ]; then
+                # Ensure the file is not in any submodule
+                in_submodule=false
+                for sm in "${submodule_paths[@]}"; do
+                  if [[ "$file" =~ ^$sm/ ]]; then
+                    in_submodule=true
+                    break
+                  fi
+                done
+                if [ "$in_submodule" = "false" ]; then
+                  files_to_process+=("./$file")
+                fi
+              fi
+            done < <(git diff --name-only --diff-filter=AM "${{ github.event.before }}" "${{ github.event.after }}" | grep '\.typ$' || true)
+          fi
+
+          # 4. Compile files and rename for flat layout (Option A)
           compiled=false
-          while IFS= read -r -d '' file; do
+          compiled_files=()
+          failed_files=()
+          mkdir -p dist
+
+          echo "Found ${#files_to_process[@]} files to process."
+          for file in "${files_to_process[@]}"; do
             basename_file=$(basename "$file")
             case "$basename_file" in
               lib.typ|utils.typ|*.template.typ)
-                echo "Skipping ignored file: $file"
+                echo "Skipping library/template file: $file"
                 continue
                 ;;
             esac
-            
-            if [ -f "$file" ]; then
-              echo "Compiling $file..."
-              if typst compile "$file" "${file%.typ}.pdf"; then
-                compiled=true
-              fi
+
+            # Format destination filename (e.g. ./Feynman_seminar/2-4.typ -> Feynman_seminar_2-4.pdf)
+            clean_path="${file#./}"
+            asset_name="${clean_path//\//_}" # Replace / with _
+            asset_name="${asset_name%.typ}.pdf"
+            dest_pdf="dist/$asset_name"
+
+            echo "Compiling $clean_path -> $dest_pdf..."
+            if typst compile "$clean_path" "$dest_pdf"; then
+              echo "Successfully compiled: $clean_path"
+              compiled_files+=("$clean_path")
+              compiled=true
+              # Also compile in-place so PDF remains in worktree if needed
+              typst compile "$clean_path" "${clean_path%.typ}.pdf"
+            else
+              echo "::error file=$clean_path::Failed to compile $clean_path"
+              failed_files+=("$clean_path")
             fi
-          done < <(find . -name "*.typ" -not -path '*/.*' -not -path '*/Typst_Template/*' -print0)
-          
+          done
+
+          # 5. Output summary to Job Summary
+          {
+            echo "## 📝 Typst Compilation Report"
+            echo ""
+            if [ ${#compiled_files[@]} -ne 0 ]; then
+              echo "### ✅ Successfully Compiled"
+              for f in "${compiled_files[@]}"; do
+                echo "- \`$f\`"
+              done
+              echo ""
+            fi
+            if [ ${#failed_files[@]} -ne 0 ]; then
+              echo "### ⚠️ Compilation Failures (Skipped)"
+              for f in "${failed_files[@]}"; do
+                echo "- \`$f\`"
+              done
+              echo ""
+            fi
+            if [ ${#compiled_files[@]} -eq 0 ] && [ ${#failed_files[@]} -eq 0 ]; then
+              echo "No files required compilation in this run."
+              echo ""
+            fi
+          } >> $GITHUB_STEP_SUMMARY
+
           echo "compiled=$compiled" >> "$GITHUB_OUTPUT"
 
-      - name: Create Release and Upload PDF
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+      - name: Create/Update Latest Release
         if: steps.compile.outputs.compiled == 'true'
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_success=true
+          
+          # 1. Retrieve all submodule paths to check deleted files correctly
+          submodule_paths=()
+          if [ -f .gitmodules ]; then
+            while read -r path; do
+              if [ -n "$path" ]; then
+                submodule_paths+=("$path")
+              fi
+            done < <(git submodule status | awk '{print $2}')
+          fi
+
+          # 2. Check if 'latest' release exists; create it if not
+          if ! gh release view latest >/dev/null 2>&1; then
+            echo "Creating 'latest' release..."
+            if ! gh release create latest --title "Latest PDFs" --notes "Automatically compiled PDFs from main branch." --target ${{ github.sha }}; then
+              release_success=false
+            fi
+          fi
+
+          # 3. Process deleted files and remove their assets if release creation succeeded
+          if [ "$release_success" = "true" ]; then
+            # We only detect deletions if it's a push and not first push
+            if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] && [ "${{ github.event_name }}" = "push" ]; then
+              while read -r file; do
+                if [ -n "$file" ]; then
+                  # Ensure the deleted file was not in a submodule
+                  in_submodule=false
+                  for sm in "${submodule_paths[@]}"; do
+                    if [[ "$file" =~ ^$sm/ ]]; then
+                      in_submodule=true
+                      break
+                    fi
+                  done
+                  
+                  if [ "$in_submodule" = "false" ]; then
+                    clean_path="${file#./}"
+                    asset_name="${clean_path//\//_}"
+                    asset_name="${asset_name%.typ}.pdf"
+                    echo "Deleting deleted asset from release: $asset_name"
+                    gh release delete-asset latest "$asset_name" -y || true
+                  fi
+                fi
+              done < <(git diff --name-only --diff-filter=D "${{ github.event.before }}" "${{ github.event.after }}" | grep '\.typ$' || true)
+            fi
+
+            # 4. Upload new/updated PDFs
+            echo "Uploading compiled PDFs to latest release..."
+            if ! gh release upload latest dist/* --clobber; then
+              release_success=false
+            fi
+          fi
+
+          # 5. Output warning to Job Summary if release failed due to write permissions
+          if [ "$release_success" = "false" ]; then
+            {
+              echo "---"
+              echo "### ⚠️ リリースの書き込み権限が設定されていません"
+              echo "親リポジトリ \`${{ github.repository }}\` の設定でリリースへの書き込み権限が不足しているため、GitHub Releasesへの保存に失敗しました。"
+              echo ""
+              echo "#### 解決方法："
+              echo "1. リポジトリの **Settings** > **Actions** > **General** に移動します。"
+              echo "2. **Workflow permissions** セクションで **Read and write permissions** を選択し、**Save** をクリックします。"
+              echo ""
+              echo "#### 今回のビルド結果："
+              echo "代わりに、この実行ページの「Artifacts（成果物）」セクションにコンパイル済みのPDFを保存しました（下部のステップでアップロード済み）。"
+            } >> $GITHUB_STEP_SUMMARY
+            echo "Release failed. Falling back to artifacts."
+          else
+            echo "Release successfully updated."
+          fi
+
+      - name: Upload PDF Artifacts
+        uses: actions/upload-artifact@0b2256b8c012f08d8c5a93b9508546f04d0d0891 # v4.3.3
+        if: always() && steps.compile.outputs.compiled == 'true'
         with:
-          tag_name: build-${{ github.run_number }}
-          name: Auto-generated Report (Build ${{ github.run_number }})
-          body: "Automated PDF build triggered by commit ${{ github.sha }}"
-          files: |
-            **/*.pdf
-            !**/Typst_Template/**
-            !**/.*/**
-          fail_on_unmatched_files: false
+          name: pdf-reports
+          path: dist/
 
