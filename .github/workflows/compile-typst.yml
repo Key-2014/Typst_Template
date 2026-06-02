@@ -132,12 +132,12 @@ jobs:
             dest_pdf="dist/$asset_name"
 
             echo "Compiling $clean_path -> $dest_pdf..."
-            if typst compile "$clean_path" "$dest_pdf"; then
+            if typst compile --root . "$clean_path" "$dest_pdf"; then
               echo "Successfully compiled: $clean_path"
               compiled_files+=("$clean_path")
               compiled=true
               # Also compile in-place so PDF remains in worktree if needed
-              typst compile "$clean_path" "${clean_path%.typ}.pdf"
+              typst compile --root . "$clean_path" "${clean_path%.typ}.pdf"
             else
               echo "::error file=$clean_path::Failed to compile $clean_path"
               failed_files+=("$clean_path")
