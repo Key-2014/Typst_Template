@@ -22,11 +22,12 @@ foreach ($pkg in $data) {
     }
 }
 
-$files = Get-ChildItem -Filter "*.typ" -Recurse
+$files = Get-ChildItem -Path $PSScriptRoot -Filter "*.typ" -Recurse
 $updatedCount = 0
 
 foreach ($file in $files) {
-    $content = Get-Content $file.FullName -Raw
+    # Read file content as UTF-8
+    $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
     # Regex to match: @preview/package-name:1.2.3
     $pattern = '(@preview/([a-zA-Z0-9_-]+)):([0-9\.]+)'
     $matches = [regex]::Matches($content, $pattern)
@@ -49,7 +50,9 @@ foreach ($file in $files) {
     }
     
     if ($fileUpdated) {
-        Set-Content -Path $file.FullName -Value $content -NoNewline
+        # Write file content as UTF-8 without BOM
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllText($file.FullName, $content, $utf8NoBom)
         $updatedCount++
     }
 }
