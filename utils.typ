@@ -1,7 +1,7 @@
 // utils.typ
 
 // --- Packages ---
-#import "@preview/unify:0.8.0": qty
+#import "@preview/unify:0.8.1": qty
 
 // --- Utils ---
 #let bk = h(1em)

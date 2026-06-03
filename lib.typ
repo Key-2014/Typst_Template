@@ -2,11 +2,11 @@
 
 // --- Packages ---
 #import "@preview/physica:0.9.8": *
-#import "@preview/unify:0.8.0": num, qty
+#import "@preview/unify:0.8.1": num, qty
 #import "@preview/cetz:0.5.2": canvas, draw, matrix, vector
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/whalogen:0.3.0": ce
-// #import "@preview/lilaq:0.5.0" as lq
+// #import "@preview/lilaq:0.6.0" as lq
 
 // --- User-defined Macros ---
 #import "utils.typ": *
