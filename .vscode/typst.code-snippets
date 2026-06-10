@@ -22,7 +22,7 @@
     ],
     "description": "Initialize a new report document with the custom template. Sets up title page, fonts, and numbering."
   },
-  "Typst_thesis_Cover_etc":{
+  "Typst_thesis_Cover_etc": {
     "prefix": "typ-thesis-cover",
     "body": [
       "#thesis-cover(",
@@ -112,7 +112,6 @@
       "#figure(",
       "  image(\"${1:path/to/image.png}\", width: ${2:80%}),",
       "  // numbering: \"\",",
-      "  // supplement: [],",
       "  // caption: [${3:Caption}]",
       ") <${4:label}>",
       "$0"
@@ -133,7 +132,6 @@
       "    [${5:Content 1}], [${6:Content 2}],",
       "  ),",
       "  // numbering: \"\",",
-      "  // supplement: [],",
       "  // caption: [${7:Caption}]",
       ") <${8:label}>",
       "$0"
