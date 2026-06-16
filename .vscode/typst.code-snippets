@@ -107,7 +107,11 @@
     "description": "Insert a CeTZ drawing canvas with a helper grid for coordinate reference."
   },
   "Typst_figure_image": {
-    "prefix": "typ-png",
+    "prefix": [
+      "typ-png",
+      "typ-image",
+      "typ-jpeg"
+    ],
     "body": [
       "#figure(",
       "  image(\"${1:path/to/image.png}\", width: ${2:80%}),",
