@@ -50,3 +50,13 @@ $
   ```,
   // caption: [Source code description]
 ) <label>
+
+
+$
+  "あいうえお" \
+  "*あいうえお*" \
+  #[*あいうえお*] \
+  bold("あいうえお") \
+  #text("あいうえお", weight: "bold") \
+  #[あいうえお]
+$
