@@ -73,7 +73,12 @@
   "Typst_equation_manual_tag": {
     "prefix": "typ-eqtag",
     "body": [
-      "#eqtag($ ${1:a^2 + b^2 = c^2} $, \"${2:A.1}\")$0"
+      "#eqtag(",
+      "  $",
+      "    ${1:a^2 + b^2 = c^2}",
+      "  $, ",
+      "  \"${2:A.1}\"",
+      ")$0",
     ],
     "description": "Tag a single equation manually using eqtag() without affecting the global counter."
   },
