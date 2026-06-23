@@ -50,3 +50,20 @@ $
   ```,
   // caption: [Source code description]
 ) <label>
+
+
+$
+  "あいうえお" \
+  "*あいうえお*" \
+  #[*あいうえお*] \
+  bold("あいうえお") \
+  #text("あいうえお", weight: "bold") \
+  #[あいうえお]
+$
+
+#eqtag(
+  $
+    F = m a
+  $,
+  "A.1",
+)<ifjd>
