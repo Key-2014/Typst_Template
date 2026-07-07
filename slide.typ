@@ -132,7 +132,6 @@
   )
 
   set math.equation(
-    numbering: target-numbering,
     supplement: labels.eq,
   )
 
