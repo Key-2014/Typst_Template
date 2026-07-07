@@ -25,7 +25,7 @@ $GhDir = Join-Path $DestRoot ".github\workflows"
 if (-not (Test-Path $GhDir)) {
     New-Item -ItemType Directory -Path $GhDir -Force | Out-Null
 }
-Copy-Item (Join-Path $TemplateRoot "init_module\workflows\compile-typst.yml") -Destination $GhDir -Force
+Copy-Item (Join-Path $TemplateRoot "init_module\.github\workflows\compile-typst.yml") -Destination $GhDir -Force
 Write-Host "[OK] Copied GitHub Actions workflow (compile-typst.yml)." -ForegroundColor Green
 
 # 2. Copy VS Code Snippets & Settings

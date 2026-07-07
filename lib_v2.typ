@@ -1,4 +1,4 @@
-// lib_v2.0.0.typ
+// lib_v2.typ
 
 // --- Packages ---
 #import "@preview/physica:0.9.8": *

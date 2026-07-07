@@ -67,7 +67,7 @@ In your main document file (e.g., `main.typ`), import the template and select co
 
 ```typ
 // Import the template and math utilities
-#import "lib/Typst_Template/lib_v2.0.0.typ": *
+#import "lib/Typst_Template/lib_v2.typ": *
 
 // 1. Initialize global layout rules
 #show: project.with(
