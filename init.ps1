@@ -96,25 +96,11 @@ if (-not (Test-Path $DestGitignore)) {
     Write-Host "[OK] Created .gitignore with PDF exclusion rules." -ForegroundColor Green
 } else {
     $Content = Get-Content $DestGitignore -Raw
-    $Updated = $false
-    
     if ($Content -notmatch "\*\.pdf") {
         Add-Content -Path $DestGitignore -Value "`n# Typst PDF exclusions`n*.pdf"
-        $Updated = $true
-    }
-    if ($Content -notmatch "\.vscode/?") {
-        Add-Content -Path $DestGitignore -Value "`n# VS Code local config`n.vscode/"
-        $Updated = $true
-    }
-    if ($Content -notmatch "\.github/?") {
-        Add-Content -Path $DestGitignore -Value "`n# GitHub Actions & configurations`n.github/"
-        $Updated = $true
-    }
-    
-    if ($Updated) {
-        Write-Host "[OK] Appended PDF and folder exclusion rules to existing .gitignore." -ForegroundColor Green
+        Write-Host "[OK] Appended PDF exclusion rules to existing .gitignore." -ForegroundColor Green
     } else {
-        Write-Host "[OK] .gitignore already contains all exclusion rules. Skipped." -ForegroundColor DarkGreen
+        Write-Host "[OK] .gitignore already contains PDF exclusion rules. Skipped." -ForegroundColor DarkGreen
     }
 }
 

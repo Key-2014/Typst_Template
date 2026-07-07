@@ -29,15 +29,14 @@
 // --- Main Template Setup ---
 #let slides(
   title: [],
-  subtitle: none,
+  subtitle: [],
   author: [],
   date: none,
+  institution: [],
   logo: none,
   aspect-ratio: "16-9",
   handout: false,
   font-size: 20pt,
-  font-family: ("New Computer Modern", "Harano Aji Gothic", "New Computer Modern Math"),
-  math-font-family: "New Computer Modern Math",
   footer-a: [],
   footer-b: [],
   footer-c: self => {
@@ -49,12 +48,12 @@
 ) = {
   // Configure Japanese Gothic fonts for slides explicitly
   set text(
-    font: font-family,
+    font: ("New Computer Modern", "Harano Aji Gothic", "New Computer Modern Math"),
     size: font-size,
   )
-  
+
   // Follow math font of original template
-  show math.equation: set text(font: math-font-family)
+  show math.equation: set text(font: ("New Computer Modern Math", "New Computer Modern", "Harano Aji Mincho"))
 
   // Configure theorion theorems/environments
   show: show-theorion
@@ -71,6 +70,7 @@
       subtitle: subtitle,
       author: author,
       date: date,
+      institution: institution,
       logo: logo,
     ),
     config-store(

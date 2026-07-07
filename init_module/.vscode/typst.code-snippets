@@ -1,0 +1,233 @@
+{
+  "Typst_init_report": {
+    "prefix": [
+      "typ-report",
+      "typ-template"
+    ],
+    "body": [
+      "#import \"../lib/Typst_Template/lib_v2.0.0.typ\": *",
+      "#show: project.with(",
+      "  supplement-lang: \"ja\",",
+      "  heading-numbering: none,",
+      "  equation-numbering: none,",
+      ")",
+      "#report-header(",
+      "  title: \"${1:title}\",",
+      "  student-id: \"\",",
+      "  author: \"\",",
+      "  date: none,",
+      ")",
+      "",
+      "$0"
+    ],
+    "description": "Initialize a new report document with the custom template. Sets up title page, fonts, and numbering."
+  },
+  "Typst_init_slide": {
+    "prefix": [
+      "typ-slide",
+      "typ-presentation"
+    ],
+    "body": [
+      "#import \"../lib/Typst_Template/slide.typ\": *",
+      "",
+      "#show: slides.with(",
+      "  title: [${1:Title}],",
+      "  // subtitle: [Subtitle],",
+      "  author: [${2:Author}],",
+      "  // date: none,",
+      "  // logo: none,",
+      ")",
+      "",
+      "#title-slide()",
+      "",
+      "== Outline <touying:hidden>",
+      "",
+      "#components.adaptive-columns(outline(title: none, indent: 1em))",
+      "",
+      "== ${3:First Slide}",
+      "",
+      "$0"
+    ],
+    "description": "Initialize a new slide presentation with the custom slide template. Sets up title slide, outline, and theme."
+  },
+  "Typst_thesis_Cover_etc": {
+    "prefix": "typ-thesis-cover",
+    "body": [
+      "#thesis-cover(",
+      "  academic-year: \"\",",
+      "  title: \"\",",
+      "  affiliation: \"\",",
+      "  student-id: \"\",",
+      "  author: \"\",",
+      "  supervisor: \"\",",
+      "  date: \"\",",
+      "  lang: \"ja\",",
+      ")",
+      "#thesis-abstract(lang: \"ja\")[",
+      "  ",
+      "]",
+      "#thesis-toc(lang: \"ja\")",
+      "",
+    ],
+    "description": "This is Template of thesis-cover, abstract, and table of contents."
+  },
+  "Typst_normal_equation_numbering": {
+    "prefix": "typ-eqnum",
+    "body": [
+      "#set math.equation(numbering: \"(1)\")",
+      "$0"
+    ],
+    "description": "Enable standard equation numbering, e.g., (1), (2)."
+  },
+  "Typst_equation_manual_override": {
+    "prefix": [
+      "typ-eq-manual",
+      "typ-eq-prefix"
+    ],
+    "body": [
+      "#set math.equation(numbering: (..nums) => \"(\" + \"${1:6.5}.\" + numbering(\"1\", ..nums) + \")\")",
+      "//#counter(math.equation).update(${2:0})",
+      "$0"
+    ],
+    "description": "Set a custom equation numbering prefix (e.g., 6.5.1) and reset the counter. Useful for textbook summaries."
+  },
+  "Typst_equation_counter": {
+    "prefix": "typ-eq-counter",
+    "body": [
+      "#counter(math.equation).update(${1:0})",
+    ],
+    "description": "Update counter of math.equation numbering",
+  },
+  "Typst_equation_manual_tag": {
+    "prefix": "typ-eqtag",
+    "body": [
+      "#eqtag(",
+      "  $",
+      "    ${1:a^2 + b^2 = c^2}",
+      "  $, ",
+      "  \"${2:A.1}\"",
+      ")$0",
+    ],
+    "description": "Tag a single equation manually using eqtag() without affecting the global counter."
+  },
+  "Typst_equation_disable": {
+    "prefix": [
+      "typ-eq-none",
+      "typ-eqdelete"
+    ],
+    "body": [
+      "#set math.equation(numbering: none)",
+      "$0"
+    ],
+    "description": "Disable equation numbering from this point forward."
+  },
+  "Typst_cetz_template": {
+    "prefix": "typ-cetz",
+    "body": [
+      "#canvas({",
+      "  import draw: *",
+      "  ",
+      "  // Grid setup",
+      "  grid((0,0), ($1, $2), step: 1, stroke: gray + 0.2pt)",
+      "  ",
+      "  // Axis setup (Optional)",
+      "  // line((0,0), ($1, 0), mark: (end: \">\", fill: black))",
+      "  // line((0,0), (0, $2), mark: (end: \">\", fill: black))",
+      "",
+      "  $0",
+      "})"
+    ],
+    "description": "Insert a CeTZ drawing canvas with a helper grid for coordinate reference."
+  },
+  "Typst_figure_image": {
+    "prefix": [
+      "typ-png",
+      "typ-image",
+      "typ-jpeg"
+    ],
+    "body": [
+      "#figure(",
+      "  image(\"${1:path/to/image.png}\", width: ${2:80%}),",
+      "  // numbering: \"\",",
+      "  // caption: [${3:Caption}]",
+      ") <${4:label}>",
+      "$0"
+    ],
+    "description": "Insert a figure containing an image with optional caption, label, and sizing."
+  },
+  "Typst_table_template": {
+    "prefix": "typ-table",
+    "body": [
+      "#figure(",
+      "  table(",
+      "    columns: (${1:1fr}, ${2:1fr}),",
+      "    inset: 8pt,",
+      "    align: horizon,",
+      "    table.header(",
+      "      [${3:Header 1}], [${4:Header 2}],",
+      "    ),",
+      "    [${5:Content 1}], [${6:Content 2}],",
+      "  ),",
+      "  // numbering: \"\",",
+      "  // caption: [${7:Caption}]",
+      ") <${8:label}>",
+      "$0"
+    ],
+    "description": "Insert a table wrapped in a figure with headers, content cells, and alignment."
+  },
+  "Typst_code_block": {
+    "prefix": "typ-code",
+    "body": [
+      "#figure(",
+      "  ```${1:python}",
+      "${2:// Write code here}",
+      "  ```,",
+      "  // caption: [${3:Source code description}]",
+      ") <${4:label}>",
+      "$0"
+    ],
+    "description": "Insert a source code block with syntax highlighting, an optional caption, and label."
+  },
+  "Typst_macro_frect": {
+    "prefix": "typ-frect",
+    "body": [
+      "#frect[",
+      "  *【${1:Theorem or Definition Name}】* \\",
+      "  ${2:Content here}",
+      "]",
+      "$0"
+    ],
+    "description": "Insert a full-width framed rectangle block using utils.typ macro. Ideal for theorems and definitions."
+  },
+  "Typst_macro_crect": {
+    "prefix": "typ-crect",
+    "body": [
+      "#crect[",
+      "  ${1:Emphasized content}",
+      "]",
+      "$0"
+    ],
+    "description": "Insert a centered framed rectangle block using utils.typ macro. Ideal for emphasizing important results."
+  },
+  "Typst_macro_ans": {
+    "prefix": "typ-ans",
+    "body": [
+      "#ans[ ${1:Answer content} ]$0"
+    ],
+    "description": "Insert an answer box with a bottom shadow using utils.typ macro. Designed for final answers."
+  },
+  "Typst_macro_unit": {
+    "prefix": "typ-u",
+    "body": [
+      "#u(\"${1:m/s^2}\")$0"
+    ],
+    "description": "Format physical units using the u() macro from utils.typ. Supports complex unit strings (e.g., m/s^2)."
+  },
+  "Typst_bibliography": {
+    "prefix": "typ-bibliography",
+    "body": [
+      "#pagebreak()",
+      "#bibliography(\"${1:}\")"
+    ]
+  }
+}
