@@ -1,2 +1,7 @@
 *.pdf
 .antigravitycli
+
+/demo/
+/test/
+.github/
+.vscode/

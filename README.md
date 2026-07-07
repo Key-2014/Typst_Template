@@ -54,11 +54,14 @@ powershell -ExecutionPolicy Bypass -File .\lib\Typst_Template\init.ps1
 
 ## Usage
 
-The easiest way to get started is to use one of the files in the `examples/` directory as a template for your project. We provide three official examples depending on your target format:
+The easiest way to get started is to use one of the files in the `examples/` or `demo/` directories as a template for your project. We provide four official examples depending on your target format:
 
 1. **[report_ja.typ](file:///C:/Users/keion/github/Typst_Template/examples/report_ja.typ)**: A Japanese report template (No separate cover page, uses `#report-header()`).
 2. **[thesis_ja.typ](file:///C:/Users/keion/github/Typst_Template/examples/thesis_ja.typ)**: A Japanese bachelor/master thesis template (Includes `#thesis-cover()`, `#thesis-abstract()`, and `#thesis-toc()`).
 3. **[thesis_en.typ](file:///C:/Users/keion/github/Typst_Template/examples/thesis_en.typ)**: An English thesis template (All fonts and captions formatted for English).
+4. **[demo_slide.typ](file:///C:/Users/keion/github/Typst_Template/demo/demo_slide.typ)**: A Japanese presentation slide template (Uses Touying's university theme, customized gothic fonts, and custom footer).
+
+### Document Template (Report / Thesis)
 
 In your main document file (e.g., `main.typ`), import the template and select configuration rules by calling `project`. You can then call layout components individually:
 
@@ -99,11 +102,38 @@ In your main document file (e.g., `main.typ`), import the template and select co
 Write your content here.
 ```
 
+### Slide Template (Presentation)
+
+In your presentation slide file (e.g., `slide.typ`), import the template and configure rules by calling `slides`:
+
+```typ
+// Import the slide template
+#import "lib/Typst_Template/slide.typ": *
+
+// 1. Initialize presentation layout rules
+#show: slides.with(
+  title: [Presentation Title],
+  subtitle: [Optional Subtitle],
+  author: [Presenter Name],
+)
+
+// 2. Render title slide
+#title-slide()
+
+// 3. Render Outline
+== Outline <touying:hidden>
+#components.adaptive-columns(outline(title: none, indent: 1em))
+
+// 4. Start your slides
+== Introduction
+Write your presentation slides content here.
+```
+
 ---
 
 ## Configuration
 
-### `project` (Global setup)
+### `project` (Global setup for documents)
 The `#show: project.with(...)` rule configures document-wide spacing, fonts, and numbering.
 
 | Argument | Type | Default | Description |
@@ -154,6 +184,25 @@ Renders a Table of Contents (目次). Page numbering is automatically managed: R
 | :--- | :--- | :--- | :--- |
 | `lang` | `string` | `"ja"` | Label language (`"ja"` or `"en"`). Displays "目次" or "Table of Contents". |
 
+### `slides` (Slide global setup)
+The `#show: slides.with(...)` rule configures slide-wide fonts, sizing, layout theme, and metadata.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `title` | `content` | `[]` | Presentation title. |
+| `subtitle` | `content`/`none` | `none` | Presentation subtitle. |
+| `author` | `content` | `[]` | Author/Presenter. |
+| `date` | `content`/`none` | `none` | Presentation date. |
+| `logo` | `content`/`none` | `none` | University or organization logo. |
+| `aspect-ratio` | `string` | `"16-9"` | The aspect ratio of the slides (e.g. `"16-9"`, `"4-3"`). |
+| `handout` | `boolean` | `false` | Enable handout mode to compile without animation transitions. |
+| `font-size` | `length` | `20pt` | Global text size for slides. |
+| `font-family` | `array` / `tuple` | `("New Computer Modern", "Harano Aji Gothic", "New Computer Modern Math")` | Text font list. Defaults to gothic font for Japanese. |
+| `math-font-family` | `string` | `"New Computer Modern Math"` | Equation font. |
+| `footer-a` | `content` / `none` | `[]` | Custom left footer content. |
+| `footer-b` | `content` / `none` | `[]` | Custom middle footer content. |
+| `footer-c` | `function` / `none` | `self => { ... }` | Custom right footer function (defaults to showing page number: `current / total`). |
+
 > **💡 Equation Numbering**
 > Equation numbering is controlled by the `equation-numbering` parameter:
 > - `none` (default): Equations are not numbered.
@@ -201,6 +250,7 @@ To use them, simply type `typ-` in a `.typ` file and select from the suggestions
 ### Template Initialization
 - **`typ-report`** (or **`typ-template`**): Initializes a new report document with the custom template (sets up title page, fonts, and numbering).
 - **`typ-thesis-cover`**: Inserts a block layout containing a thesis cover page, abstract block, and table of contents.
+- **`typ-slide`** (or **`typ-presentation`**): Initializes a new slide presentation document using the custom Touying-based template (sets up title slide, outline, and theme).
 
 ### Content Blocks
 - **`typ-png`**: Inserts a figure containing an image with optional caption and label.

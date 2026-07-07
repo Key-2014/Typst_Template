@@ -25,7 +25,7 @@ $GhDir = Join-Path $DestRoot ".github\workflows"
 if (-not (Test-Path $GhDir)) {
     New-Item -ItemType Directory -Path $GhDir -Force | Out-Null
 }
-Copy-Item (Join-Path $TemplateRoot ".github\workflows\compile-typst.yml") -Destination $GhDir -Force
+Copy-Item (Join-Path $TemplateRoot "init_module\workflows\compile-typst.yml") -Destination $GhDir -Force
 Write-Host "[OK] Copied GitHub Actions workflow (compile-typst.yml)." -ForegroundColor Green
 
 # 2. Copy VS Code Snippets & Settings
@@ -33,10 +33,10 @@ $VsCodeDir = Join-Path $DestRoot ".vscode"
 if (-not (Test-Path $VsCodeDir)) {
     New-Item -ItemType Directory -Path $VsCodeDir -Force | Out-Null
 }
-Copy-Item (Join-Path $TemplateRoot ".vscode\typst.code-snippets") -Destination $VsCodeDir -Force
+Copy-Item (Join-Path $TemplateRoot "init_module\.vscode\typst.code-snippets") -Destination $VsCodeDir -Force
 Write-Host "[OK] Copied VS Code snippets (typst.code-snippets)." -ForegroundColor Green
 
-$SourceSettings = Join-Path $TemplateRoot ".vscode\settings.json"
+$SourceSettings = Join-Path $TemplateRoot "init_module\.vscode\settings.json"
 $DestSettings = Join-Path $VsCodeDir "settings.json"
 
 if (Test-Path $DestSettings) {
@@ -88,7 +88,7 @@ if (Test-Path $DestSettings) {
 }
 
 # 3. Setup .gitignore
-$SourceGitignore = Join-Path $TemplateRoot ".gitignore"
+$SourceGitignore = Join-Path $TemplateRoot "init_module\.gitignore"
 $DestGitignore = Join-Path $DestRoot ".gitignore"
 
 if (-not (Test-Path $DestGitignore)) {
@@ -96,11 +96,25 @@ if (-not (Test-Path $DestGitignore)) {
     Write-Host "[OK] Created .gitignore with PDF exclusion rules." -ForegroundColor Green
 } else {
     $Content = Get-Content $DestGitignore -Raw
+    $Updated = $false
+    
     if ($Content -notmatch "\*\.pdf") {
         Add-Content -Path $DestGitignore -Value "`n# Typst PDF exclusions`n*.pdf"
-        Write-Host "[OK] Appended PDF exclusion rules to existing .gitignore." -ForegroundColor Green
+        $Updated = $true
+    }
+    if ($Content -notmatch "\.vscode/?") {
+        Add-Content -Path $DestGitignore -Value "`n# VS Code local config`n.vscode/"
+        $Updated = $true
+    }
+    if ($Content -notmatch "\.github/?") {
+        Add-Content -Path $DestGitignore -Value "`n# GitHub Actions & configurations`n.github/"
+        $Updated = $true
+    }
+    
+    if ($Updated) {
+        Write-Host "[OK] Appended PDF and folder exclusion rules to existing .gitignore." -ForegroundColor Green
     } else {
-        Write-Host "[OK] .gitignore already contains PDF exclusion rules. Skipped." -ForegroundColor DarkGreen
+        Write-Host "[OK] .gitignore already contains all exclusion rules. Skipped." -ForegroundColor DarkGreen
     }
 }
 

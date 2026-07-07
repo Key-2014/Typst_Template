@@ -22,6 +22,34 @@
     ],
     "description": "Initialize a new report document with the custom template. Sets up title page, fonts, and numbering."
   },
+  "Typst_init_slide": {
+    "prefix": [
+      "typ-slide",
+      "typ-presentation"
+    ],
+    "body": [
+      "#import \"../lib/Typst_Template/slide.typ\": *",
+      "",
+      "#show: slides.with(",
+      "  title: [${1:Title}],",
+      "  // subtitle: [Subtitle],",
+      "  author: [${2:Author}],",
+      "  // date: none,",
+      "  // logo: none,",
+      ")",
+      "",
+      "#title-slide()",
+      "",
+      "== Outline <touying:hidden>",
+      "",
+      "#components.adaptive-columns(outline(title: none, indent: 1em))",
+      "",
+      "== ${3:First Slide}",
+      "",
+      "$0"
+    ],
+    "description": "Initialize a new slide presentation with the custom slide template. Sets up title slide, outline, and theme."
+  },
   "Typst_thesis_Cover_etc": {
     "prefix": "typ-thesis-cover",
     "body": [
