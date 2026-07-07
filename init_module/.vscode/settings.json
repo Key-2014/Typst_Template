@@ -1,0 +1,7 @@
+{
+  "[typst]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    }
+  }
+}
