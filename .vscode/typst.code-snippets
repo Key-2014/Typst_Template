@@ -35,6 +35,7 @@
       "  // subtitle: [Subtitle],",
       "  author: [${2:Author}],",
       "  // date: none,",
+      "  // institution: [],",
       "  // logo: none,",
       ")",
       "",

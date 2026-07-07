@@ -26,8 +26,33 @@
   cover: draw.hide.with(bounds: true),
 )
 
+// --- Language & Caption Mappings ---
+// Defines localized labels for figures, tables, equations, and bibliography titles.
+#let supplement-labels = (
+  ja: (
+    fig: "図",
+    tab: "表",
+    eq: "式",
+    citation: "参考文献",
+  ),
+  en: (
+    fig: "Fig.",
+    tab: "Table",
+    eq: "Eq.",
+    citation: "References",
+  ),
+  en-full: (
+    fig: "Figure",
+    tab: "Table",
+    eq: "Equation",
+    citation: "References",
+  ),
+)
+
 // --- Main Template Setup ---
 #let slides(
+  lang: "ja",
+  supplement-lang: "ja",
   title: [],
   subtitle: [],
   author: [],
@@ -46,14 +71,40 @@
   },
   body,
 ) = {
+  // Select labels dynamically based on the language
+  let labels = supplement-labels.at(supplement-lang, default: supplement-labels.ja)
+
+  // Configure fallback fonts depending on the language
+  let font-family = if lang == "ja" {
+    ("New Computer Modern", "Harano Aji Mincho", "New Computer Modern Math")
+  } else {
+    ("New Computer Modern", "New Computer Modern Math")
+  }
+
+  let math-font-family = if lang == "ja" {
+    ("New Computer Modern Math", "New Computer Modern", "Harano Aji Mincho")
+  } else {
+    ("New Computer Modern Math", "New Computer Modern")
+  }
+
   // Configure Japanese Gothic fonts for slides explicitly
   set text(
-    font: ("New Computer Modern", "Harano Aji Gothic", "New Computer Modern Math"),
+    font: font-family,
     size: font-size,
+    lang: lang,
   )
 
   // Follow math font of original template
-  show math.equation: set text(font: ("New Computer Modern Math", "New Computer Modern", "Harano Aji Mincho"))
+  show math.equation: set text(
+    font: math-font-family,
+    size: font-size,
+  )
+
+  // Use horizontal style for inline fractions
+  show math.equation.where(block: false): set math.frac(style: "horizontal")
+
+  // Allow block equations to break across pages
+  show math.equation.where(block: true): set block(breakable: true)
 
   // Configure theorion theorems/environments
   show: show-theorion
@@ -79,6 +130,16 @@
       footer-c: footer-c,
     ),
   )
+
+  set math.equation(
+    numbering: target-numbering,
+    supplement: labels.eq,
+  )
+
+  // --- Tables & Figures ---
+  set figure(supplement: labels.fig)
+  show figure.where(kind: table): set figure(supplement: labels.tab)
+  show figure.where(kind: table): set figure.caption(position: top)
 
   body
 }
