@@ -87,25 +87,6 @@
     ("New Computer Modern Math", "New Computer Modern")
   }
 
-  // Configure Japanese Gothic fonts for slides explicitly
-  set text(
-    font: font-family,
-    size: font-size,
-    lang: lang,
-  )
-
-  // Follow math font of original template
-  show math.equation: set text(
-    font: math-font-family,
-    size: font-size,
-  )
-
-  // Use horizontal style for inline fractions
-  show math.equation.where(block: false): set math.frac(style: "horizontal")
-
-  // Allow block equations to break across pages
-  show math.equation.where(block: true): set block(breakable: true)
-
   // Configure theorion theorems/environments
   show: show-theorion
 
@@ -130,6 +111,25 @@
       footer-c: footer-c,
     ),
   )
+
+  // Configure Japanese Gothic fonts for slides explicitly
+  set text(
+    font: font-family,
+    size: font-size,
+    lang: lang,
+  )
+
+  // Follow math font of original template
+  show math.equation: set text(
+    font: math-font-family,
+    size: font-size,
+  )
+
+  // Use horizontal style for inline fractions
+  show math.equation.where(block: false): set math.frac(style: "horizontal")
+
+  // Allow block equations to break across pages
+  show math.equation.where(block: true): set block(breakable: true)
 
   set math.equation(
     supplement: labels.eq,
