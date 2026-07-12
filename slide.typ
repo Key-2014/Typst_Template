@@ -76,13 +76,13 @@
 
   // Configure fallback fonts depending on the language
   let font-family = if lang == "ja" {
-    ("New Computer Modern", "Harano Aji Mincho", "New Computer Modern Math")
+    ("New Computer Modern", "Harano Aji Gothic", "New Computer Modern Math")
   } else {
     ("New Computer Modern", "New Computer Modern Math")
   }
 
   let math-font-family = if lang == "ja" {
-    ("New Computer Modern Math", "New Computer Modern", "Harano Aji Mincho")
+    ("New Computer Modern Math", "New Computer Modern", "Harano Aji Gothic")
   } else {
     ("New Computer Modern Math", "New Computer Modern")
   }
