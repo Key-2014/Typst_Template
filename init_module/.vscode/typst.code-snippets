@@ -37,6 +37,7 @@
       "  // date: none,",
       "  // institution: [],",
       "  // logo: none,",
+      "  font-size: 19pt,",
       ")",
       "",
       "#title-slide()",

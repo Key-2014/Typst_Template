@@ -61,7 +61,7 @@
   logo: none,
   aspect-ratio: "16-9",
   handout: false,
-  font-size: 20pt,
+  font-size: 19pt,
   footer-a: [],
   footer-b: [],
   footer-c: self => {
