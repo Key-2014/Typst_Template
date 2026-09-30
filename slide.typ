@@ -9,7 +9,7 @@
 #import "utils.typ": *
 
 // --- Slide/Touying Packages ---
-#import "@preview/touying:0.7.4": *
+#import "@preview/touying:0.8.0": *
 #import themes.university: *
 #import "@preview/fletcher:0.5.8" as fletcher
 #import fletcher: edge, node

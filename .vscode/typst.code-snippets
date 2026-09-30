@@ -12,7 +12,7 @@
       "  equation-numbering: none,",
       ")",
       "#report-header(",
-      "  title: \"${1:title}\",",
+      "  title: [${1:title}],",
       "  student-id: \"\",",
       "  author: \"\",",
       "  date: none,",

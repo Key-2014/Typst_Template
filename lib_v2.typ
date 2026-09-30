@@ -91,7 +91,6 @@
   // --- Typography Rules for Math---
   show math.equation: set text(
     font: math-font-family,
-    size: 11pt,
   )
 
   // Use horizontal style for inline fractions
